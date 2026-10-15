@@ -3,9 +3,9 @@ import { requireAuth } from './lib/auth-guard.mts';
 import { transactBlobJSON, json } from './lib/shared.mts';
 import { parseBankCSV, type BankTransaction } from './lib/bank-csv.mts';
 import { seed } from './lib/bank-seed.mts';
-import { categories, suggestedCategory } from './lib/bank-metrics.mts';
+import { categories, classify } from './lib/bank-metrics.mts';
 const STORE='ledger-bank-transactions', KEY='ledger';
-type State={rows:BankTransaction[];categories:Record<string,string>};
+type State={rows:BankTransaction[];categories:Record<string,string>;owners?:Record<string,string>;sources?:Record<string,string>};
 const fallback:State={rows:[],categories:{}};
 export default async(req:Request)=>{
  const denied=await requireAuth(req);if(denied)return denied;
@@ -13,11 +13,19 @@ export default async(req:Request)=>{
  try{
  if(req.method==='GET'){
  const state=await getStore(STORE).get(KEY,{type:'json',consistency:'strong'}) as State|null || fallback;
- return json({rows:merge(state).map(t=>({...t,category:state.categories[t.id]||suggestedCategory(t),reviewed:!!state.categories[t.id]})),categories,accounts:[...new Set(['2910','2911','7503','7510','8661','8662',...merge(state).map(t=>t.account)])].sort()});
+ return json({rows:merge(state).map(t=>{const rule=classify(t,state.sources);return {...t,...rule,owner:state.owners?.[t.id]??rule.owner,category:state.categories[t.id]||rule.category,reviewed:!!state.categories[t.id]||!rule.needsReview,classificationSource:state.categories[t.id]?'Manual':'CSV rule'};}),sources:state.sources||{},categories,accounts:[...new Set(['2910','2911','7503','7510','8661','8662',...merge(state).map(t=>t.account)])].sort()});
  }
  if(req.method!=='POST')return json({error:'Method not allowed'},405);
  const raw=await req.text();if(raw.length>3_000_000)return json({error:'Import is too large; upload fewer files (3 MB maximum)'},413);
  const body=JSON.parse(raw);
+ if(body.action==='source-owner'){
+ if(!['TOTAL CHECKING','Adv Plus Banking'].includes(body.source)||!['Art','Bryce','Jesse',''].includes(body.owner))throw new Error('Invalid bank-source owner');
+ await transactBlobJSON<State>(STORE,KEY,fallback,s=>({...s,sources:{...s.sources,[body.source]:body.owner}}));return json({ok:true});
+ }
+ if(body.action==='owner'){
+ if(!['Art','Bryce','Jesse',''].includes(body.owner)||typeof body.id!=='string')throw new Error('Invalid owner');
+ await transactBlobJSON<State>(STORE,KEY,fallback,s=>{if(!merge(s).some(t=>t.id===body.id))throw new Error('Unknown transaction');return {...s,owners:{...s.owners,[body.id]:body.owner}}});return json({ok:true});
+ }
  if(body.action==='categorize'){
  if(!Array.isArray(body.ids)||body.ids.length>5000||!categories.includes(body.category))throw new Error('Invalid category selection');
  await transactBlobJSON<State>(STORE,KEY,fallback,s=>{const ids=new Set(merge(s).map(t=>t.id));for(const id of body.ids){if(!ids.has(id))throw new Error('Unknown transaction');}return {...s,categories:{...s.categories,...Object.fromEntries(body.ids.map((id:string)=>[id,body.category]))}}});return json({ok:true});

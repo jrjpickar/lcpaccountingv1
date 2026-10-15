@@ -13,6 +13,7 @@ export const seed: BankTransaction[] = [
     "cents": -1500,
     "currency": "USD",
     "balanceCents": 799,
+    "counterpartyAccount": "8661",
     "source": "Relay (Partial) 2026-10-01 #2910.csv"
   },
   {
@@ -27,6 +28,7 @@ export const seed: BankTransaction[] = [
     "cents": -1499,
     "currency": "USD",
     "balanceCents": 2299,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #2910.csv"
   },
   {
@@ -41,6 +43,7 @@ export const seed: BankTransaction[] = [
     "cents": 3000,
     "currency": "USD",
     "balanceCents": 3798,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #2910.csv"
   },
   {
@@ -55,6 +58,7 @@ export const seed: BankTransaction[] = [
     "cents": 20,
     "currency": "USD",
     "balanceCents": 103,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #2911.csv"
   },
   {
@@ -69,6 +73,7 @@ export const seed: BankTransaction[] = [
     "cents": 25000,
     "currency": "USD",
     "balanceCents": 25978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -83,6 +88,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -97,6 +103,7 @@ export const seed: BankTransaction[] = [
     "cents": -1000,
     "currency": "USD",
     "balanceCents": 2978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -111,6 +118,7 @@ export const seed: BankTransaction[] = [
     "cents": 1500,
     "currency": "USD",
     "balanceCents": 3978,
+    "counterpartyAccount": "2910",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -125,6 +133,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 2478,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -139,6 +148,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 4478,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -153,6 +163,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 14478,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -167,6 +178,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 14978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -181,6 +193,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 19978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -195,6 +208,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 24978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -209,6 +223,7 @@ export const seed: BankTransaction[] = [
     "cents": -2500,
     "currency": "USD",
     "balanceCents": 25478,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -223,6 +238,7 @@ export const seed: BankTransaction[] = [
     "cents": 25000,
     "currency": "USD",
     "balanceCents": 27978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -237,6 +253,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 2978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -251,6 +268,7 @@ export const seed: BankTransaction[] = [
     "cents": -1000,
     "currency": "USD",
     "balanceCents": 7978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -265,6 +283,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 8978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -279,6 +298,7 @@ export const seed: BankTransaction[] = [
     "cents": -34900,
     "currency": "USD",
     "balanceCents": 13978,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -293,6 +313,7 @@ export const seed: BankTransaction[] = [
     "cents": -900,
     "currency": "USD",
     "balanceCents": 48878,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -307,6 +328,7 @@ export const seed: BankTransaction[] = [
     "cents": -1059,
     "currency": "USD",
     "balanceCents": 49778,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -321,6 +343,7 @@ export const seed: BankTransaction[] = [
     "cents": -3000,
     "currency": "USD",
     "balanceCents": 50837,
+    "counterpartyAccount": "2910",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -335,6 +358,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 53837,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -349,6 +373,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 54337,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -363,6 +388,7 @@ export const seed: BankTransaction[] = [
     "cents": -840,
     "currency": "USD",
     "balanceCents": 64337,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -377,6 +403,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 65177,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -391,6 +418,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 65677,
+    "counterpartyAccount": "",
     "source": "Relay (Partial) 2026-10-01 #8661.csv"
   },
   {
@@ -405,6 +433,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 500,
+    "counterpartyAccount": "",
     "source": "Relay 2026-04-01 #8661.csv"
   },
   {
@@ -419,6 +448,7 @@ export const seed: BankTransaction[] = [
     "cents": 1000,
     "currency": "USD",
     "balanceCents": 1000,
+    "counterpartyAccount": "",
     "source": "Relay 2026-04-01 #8661.csv"
   },
   {
@@ -433,6 +463,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 42525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -447,6 +478,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 44525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -461,6 +493,7 @@ export const seed: BankTransaction[] = [
     "cents": 18500,
     "currency": "USD",
     "balanceCents": 46525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -475,6 +508,7 @@ export const seed: BankTransaction[] = [
     "cents": 18500,
     "currency": "USD",
     "balanceCents": 28025,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -489,6 +523,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 9525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -503,6 +538,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 11525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -517,6 +553,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 13525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -531,6 +568,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 15525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -545,6 +583,7 @@ export const seed: BankTransaction[] = [
     "cents": -4375,
     "currency": "USD",
     "balanceCents": 17525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -559,6 +598,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 21900,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -573,6 +613,7 @@ export const seed: BankTransaction[] = [
     "cents": 10000,
     "currency": "USD",
     "balanceCents": 19400,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -587,6 +628,7 @@ export const seed: BankTransaction[] = [
     "cents": 7500,
     "currency": "USD",
     "balanceCents": 9400,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -601,6 +643,7 @@ export const seed: BankTransaction[] = [
     "cents": -29700,
     "currency": "USD",
     "balanceCents": 1900,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -615,6 +658,7 @@ export const seed: BankTransaction[] = [
     "cents": -3000,
     "currency": "USD",
     "balanceCents": 31600,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -629,6 +673,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 34600,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -643,6 +688,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 32100,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -657,6 +703,7 @@ export const seed: BankTransaction[] = [
     "cents": 1800,
     "currency": "USD",
     "balanceCents": 29600,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -671,6 +718,7 @@ export const seed: BankTransaction[] = [
     "cents": -4000,
     "currency": "USD",
     "balanceCents": 27800,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -685,6 +733,7 @@ export const seed: BankTransaction[] = [
     "cents": 1800,
     "currency": "USD",
     "balanceCents": 31800,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -699,6 +748,7 @@ export const seed: BankTransaction[] = [
     "cents": 14000,
     "currency": "USD",
     "balanceCents": 30000,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -713,6 +763,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 16000,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -727,6 +778,7 @@ export const seed: BankTransaction[] = [
     "cents": 15000,
     "currency": "USD",
     "balanceCents": 16500,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -741,6 +793,7 @@ export const seed: BankTransaction[] = [
     "cents": 1000,
     "currency": "USD",
     "balanceCents": 1500,
+    "counterpartyAccount": "",
     "source": "Relay 2026-05-01 #8661.csv"
   },
   {
@@ -755,6 +808,7 @@ export const seed: BankTransaction[] = [
     "cents": 5000,
     "currency": "USD",
     "balanceCents": 16543,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -769,6 +823,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 11543,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -783,6 +838,7 @@ export const seed: BankTransaction[] = [
     "cents": -2500,
     "currency": "USD",
     "balanceCents": 16543,
+    "counterpartyAccount": "7662",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -797,6 +853,7 @@ export const seed: BankTransaction[] = [
     "cents": -11900,
     "currency": "USD",
     "balanceCents": 19043,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -811,6 +868,7 @@ export const seed: BankTransaction[] = [
     "cents": 20000,
     "currency": "USD",
     "balanceCents": 30943,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -825,6 +883,7 @@ export const seed: BankTransaction[] = [
     "cents": 7500,
     "currency": "USD",
     "balanceCents": 10943,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -839,6 +898,7 @@ export const seed: BankTransaction[] = [
     "cents": -4573,
     "currency": "USD",
     "balanceCents": 3443,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -853,6 +913,7 @@ export const seed: BankTransaction[] = [
     "cents": 6000,
     "currency": "USD",
     "balanceCents": 8016,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -867,6 +928,7 @@ export const seed: BankTransaction[] = [
     "cents": -29700,
     "currency": "USD",
     "balanceCents": 2016,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -881,6 +943,7 @@ export const seed: BankTransaction[] = [
     "cents": 5000,
     "currency": "USD",
     "balanceCents": 31716,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -895,6 +958,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 26716,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -909,6 +973,7 @@ export const seed: BankTransaction[] = [
     "cents": 5000,
     "currency": "USD",
     "balanceCents": 27216,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -923,6 +988,7 @@ export const seed: BankTransaction[] = [
     "cents": -4000,
     "currency": "USD",
     "balanceCents": 22216,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -937,6 +1003,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 26216,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -951,6 +1018,7 @@ export const seed: BankTransaction[] = [
     "cents": -12309,
     "currency": "USD",
     "balanceCents": 28216,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -965,6 +1033,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 40525,
+    "counterpartyAccount": "",
     "source": "Relay 2026-06-01 #8661.csv"
   },
   {
@@ -979,6 +1048,7 @@ export const seed: BankTransaction[] = [
     "cents": -142900,
     "currency": "USD",
     "balanceCents": 84,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -993,6 +1063,7 @@ export const seed: BankTransaction[] = [
     "cents": -142984,
     "currency": "USD",
     "balanceCents": 142984,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -1007,6 +1078,7 @@ export const seed: BankTransaction[] = [
     "cents": -142984,
     "currency": "USD",
     "balanceCents": 285968,
+    "counterpartyAccount": "7503",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -1021,6 +1093,7 @@ export const seed: BankTransaction[] = [
     "cents": -714920,
     "currency": "USD",
     "balanceCents": 428952,
+    "counterpartyAccount": "7510",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -1035,6 +1108,7 @@ export const seed: BankTransaction[] = [
     "cents": -511696,
     "currency": "USD",
     "balanceCents": 1143872,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -1049,6 +1123,7 @@ export const seed: BankTransaction[] = [
     "cents": -514800,
     "currency": "USD",
     "balanceCents": 1655568,
+    "counterpartyAccount": "7503",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -1063,6 +1138,7 @@ export const seed: BankTransaction[] = [
     "cents": 2170368,
     "currency": "USD",
     "balanceCents": 2170368,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #2910.csv"
   },
   {
@@ -1077,6 +1153,7 @@ export const seed: BankTransaction[] = [
     "cents": 142984,
     "currency": "USD",
     "balanceCents": 654680,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-07-01 #2911.csv"
   },
   {
@@ -1091,6 +1168,7 @@ export const seed: BankTransaction[] = [
     "cents": 511696,
     "currency": "USD",
     "balanceCents": 511696,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-07-01 #2911.csv"
   },
   {
@@ -1105,6 +1183,7 @@ export const seed: BankTransaction[] = [
     "cents": 142984,
     "currency": "USD",
     "balanceCents": 657784,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-07-01 #7503.csv"
   },
   {
@@ -1119,6 +1198,7 @@ export const seed: BankTransaction[] = [
     "cents": 514800,
     "currency": "USD",
     "balanceCents": 514800,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-07-01 #7503.csv"
   },
   {
@@ -1133,6 +1213,7 @@ export const seed: BankTransaction[] = [
     "cents": -800,
     "currency": "USD",
     "balanceCents": 120,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #7510.csv"
   },
   {
@@ -1147,6 +1228,7 @@ export const seed: BankTransaction[] = [
     "cents": -714000,
     "currency": "USD",
     "balanceCents": 920,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #7510.csv"
   },
   {
@@ -1161,6 +1243,7 @@ export const seed: BankTransaction[] = [
     "cents": 714920,
     "currency": "USD",
     "balanceCents": 714920,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-07-01 #7510.csv"
   },
   {
@@ -1175,6 +1258,7 @@ export const seed: BankTransaction[] = [
     "cents": 142900,
     "currency": "USD",
     "balanceCents": 143498,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1189,6 +1273,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 598,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1203,6 +1288,7 @@ export const seed: BankTransaction[] = [
     "cents": -4000,
     "currency": "USD",
     "balanceCents": 1098,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1217,6 +1303,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 5098,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1231,6 +1318,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 2598,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1245,6 +1333,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 98,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1259,6 +1348,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 5098,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1273,6 +1363,7 @@ export const seed: BankTransaction[] = [
     "cents": 2500,
     "currency": "USD",
     "balanceCents": 2598,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1287,6 +1378,7 @@ export const seed: BankTransaction[] = [
     "cents": -11900,
     "currency": "USD",
     "balanceCents": 98,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1301,6 +1393,7 @@ export const seed: BankTransaction[] = [
     "cents": -3646,
     "currency": "USD",
     "balanceCents": 11998,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1315,6 +1408,7 @@ export const seed: BankTransaction[] = [
     "cents": 7800,
     "currency": "USD",
     "balanceCents": 15644,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1329,6 +1423,7 @@ export const seed: BankTransaction[] = [
     "cents": 7800,
     "currency": "USD",
     "balanceCents": 7844,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1343,6 +1438,7 @@ export const seed: BankTransaction[] = [
     "cents": -29700,
     "currency": "USD",
     "balanceCents": 44,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1357,6 +1453,7 @@ export const seed: BankTransaction[] = [
     "cents": 100,
     "currency": "USD",
     "balanceCents": 29744,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1371,6 +1468,7 @@ export const seed: BankTransaction[] = [
     "cents": -3000,
     "currency": "USD",
     "balanceCents": 29644,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1385,6 +1483,7 @@ export const seed: BankTransaction[] = [
     "cents": -4000,
     "currency": "USD",
     "balanceCents": 32644,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1399,6 +1498,7 @@ export const seed: BankTransaction[] = [
     "cents": 30600,
     "currency": "USD",
     "balanceCents": 36644,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1413,6 +1513,7 @@ export const seed: BankTransaction[] = [
     "cents": -21399,
     "currency": "USD",
     "balanceCents": 6044,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1427,6 +1528,7 @@ export const seed: BankTransaction[] = [
     "cents": 16400,
     "currency": "USD",
     "balanceCents": 27443,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1441,6 +1543,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 11043,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1455,6 +1558,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 16043,
+    "counterpartyAccount": "",
     "source": "Relay 2026-07-01 #8661.csv"
   },
   {
@@ -1469,6 +1573,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 17785,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1483,6 +1588,7 @@ export const seed: BankTransaction[] = [
     "cents": 24900,
     "currency": "USD",
     "balanceCents": 27785,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1497,6 +1603,7 @@ export const seed: BankTransaction[] = [
     "cents": -50000,
     "currency": "USD",
     "balanceCents": 2885,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1511,6 +1618,7 @@ export const seed: BankTransaction[] = [
     "cents": 50000,
     "currency": "USD",
     "balanceCents": 52885,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1525,6 +1633,7 @@ export const seed: BankTransaction[] = [
     "cents": -22199,
     "currency": "USD",
     "balanceCents": 2885,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1539,6 +1648,7 @@ export const seed: BankTransaction[] = [
     "cents": 5000,
     "currency": "USD",
     "balanceCents": 25084,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1553,6 +1663,7 @@ export const seed: BankTransaction[] = [
     "cents": 20000,
     "currency": "USD",
     "balanceCents": 20084,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1567,6 +1678,7 @@ export const seed: BankTransaction[] = [
     "cents": -511696,
     "currency": "USD",
     "balanceCents": 84,
+    "counterpartyAccount": "2669",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1581,6 +1693,7 @@ export const seed: BankTransaction[] = [
     "cents": 511696,
     "currency": "USD",
     "balanceCents": 511780,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-08-01 #2910.csv"
   },
   {
@@ -1595,6 +1708,7 @@ export const seed: BankTransaction[] = [
     "cents": -50000,
     "currency": "USD",
     "balanceCents": 67984,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-08-01 #2911.csv"
   },
   {
@@ -1609,6 +1723,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 117984,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-08-01 #2911.csv"
   },
   {
@@ -1623,6 +1738,7 @@ export const seed: BankTransaction[] = [
     "cents": -20000,
     "currency": "USD",
     "balanceCents": 122984,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-08-01 #2911.csv"
   },
   {
@@ -1637,6 +1753,7 @@ export const seed: BankTransaction[] = [
     "cents": -511696,
     "currency": "USD",
     "balanceCents": 142984,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-08-01 #2911.csv"
   },
   {
@@ -1651,6 +1768,7 @@ export const seed: BankTransaction[] = [
     "cents": -657784,
     "currency": "USD",
     "balanceCents": 0,
+    "counterpartyAccount": "1385",
     "source": "Relay 2026-08-01 #7503.csv"
   },
   {
@@ -1665,6 +1783,7 @@ export const seed: BankTransaction[] = [
     "cents": -8000,
     "currency": "USD",
     "balanceCents": 38769,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1679,6 +1798,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 46769,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1693,6 +1813,7 @@ export const seed: BankTransaction[] = [
     "cents": 10000,
     "currency": "USD",
     "balanceCents": 47269,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1707,6 +1828,7 @@ export const seed: BankTransaction[] = [
     "cents": -6000,
     "currency": "USD",
     "balanceCents": 37269,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1721,6 +1843,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 43269,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1735,6 +1858,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 53269,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1749,6 +1873,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 63269,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1763,6 +1888,7 @@ export const seed: BankTransaction[] = [
     "cents": 50000,
     "currency": "USD",
     "balanceCents": 73269,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1777,6 +1903,7 @@ export const seed: BankTransaction[] = [
     "cents": -6915,
     "currency": "USD",
     "balanceCents": 23269,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1791,6 +1918,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 30184,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1805,6 +1933,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 40184,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1819,6 +1948,7 @@ export const seed: BankTransaction[] = [
     "cents": -8000,
     "currency": "USD",
     "balanceCents": 50184,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1833,6 +1963,7 @@ export const seed: BankTransaction[] = [
     "cents": -8000,
     "currency": "USD",
     "balanceCents": 58184,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1847,6 +1978,7 @@ export const seed: BankTransaction[] = [
     "cents": -29700,
     "currency": "USD",
     "balanceCents": 66184,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1861,6 +1993,7 @@ export const seed: BankTransaction[] = [
     "cents": -15000,
     "currency": "USD",
     "balanceCents": 95884,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1875,6 +2008,7 @@ export const seed: BankTransaction[] = [
     "cents": -30056,
     "currency": "USD",
     "balanceCents": 110884,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1889,6 +2023,7 @@ export const seed: BankTransaction[] = [
     "cents": -1059,
     "currency": "USD",
     "balanceCents": 140940,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1903,6 +2038,7 @@ export const seed: BankTransaction[] = [
     "cents": -1499,
     "currency": "USD",
     "balanceCents": 141999,
+    "counterpartyAccount": "",
     "source": "Relay 2026-08-01 #8661.csv"
   },
   {
@@ -1917,6 +2053,7 @@ export const seed: BankTransaction[] = [
     "cents": -19000,
     "currency": "USD",
     "balanceCents": 798,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -1931,6 +2068,7 @@ export const seed: BankTransaction[] = [
     "cents": 18000,
     "currency": "USD",
     "balanceCents": 19798,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -1945,6 +2083,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 1798,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -1959,6 +2098,7 @@ export const seed: BankTransaction[] = [
     "cents": 10000,
     "currency": "USD",
     "balanceCents": 11798,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -1973,6 +2113,7 @@ export const seed: BankTransaction[] = [
     "cents": -4488,
     "currency": "USD",
     "balanceCents": 1798,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -1987,6 +2128,7 @@ export const seed: BankTransaction[] = [
     "cents": -50000,
     "currency": "USD",
     "balanceCents": 6286,
+    "counterpartyAccount": "8661",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -2001,6 +2143,7 @@ export const seed: BankTransaction[] = [
     "cents": 40000,
     "currency": "USD",
     "balanceCents": 56286,
+    "counterpartyAccount": "2911",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -2015,6 +2158,7 @@ export const seed: BankTransaction[] = [
     "cents": -1499,
     "currency": "USD",
     "balanceCents": 16286,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #2910.csv"
   },
   {
@@ -2029,6 +2173,7 @@ export const seed: BankTransaction[] = [
     "cents": -18000,
     "currency": "USD",
     "balanceCents": 83,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #2911.csv"
   },
   {
@@ -2043,6 +2188,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 18083,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #2911.csv"
   },
   {
@@ -2057,6 +2203,7 @@ export const seed: BankTransaction[] = [
     "cents": -40000,
     "currency": "USD",
     "balanceCents": 28083,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #2911.csv"
   },
   {
@@ -2071,6 +2218,7 @@ export const seed: BankTransaction[] = [
     "cents": 99,
     "currency": "USD",
     "balanceCents": 68083,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #2911.csv"
   },
   {
@@ -2085,6 +2233,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 66177,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2099,6 +2248,7 @@ export const seed: BankTransaction[] = [
     "cents": -9700,
     "currency": "USD",
     "balanceCents": 76177,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2113,6 +2263,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 85877,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2127,6 +2278,7 @@ export const seed: BankTransaction[] = [
     "cents": -1499,
     "currency": "USD",
     "balanceCents": 90877,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2141,6 +2293,7 @@ export const seed: BankTransaction[] = [
     "cents": -1000,
     "currency": "USD",
     "balanceCents": 92376,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2155,6 +2308,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 93376,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2169,6 +2323,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 103376,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2183,6 +2338,7 @@ export const seed: BankTransaction[] = [
     "cents": -1000,
     "currency": "USD",
     "balanceCents": 113376,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2197,6 +2353,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 114376,
+    "counterpartyAccount": "7662",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2211,6 +2368,7 @@ export const seed: BankTransaction[] = [
     "cents": -9089,
     "currency": "USD",
     "balanceCents": 124376,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2225,6 +2383,7 @@ export const seed: BankTransaction[] = [
     "cents": 132900,
     "currency": "USD",
     "balanceCents": 133465,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2239,6 +2398,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 565,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2253,6 +2413,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 1065,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2267,6 +2428,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 6065,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2281,6 +2443,7 @@ export const seed: BankTransaction[] = [
     "cents": -2018,
     "currency": "USD",
     "balanceCents": 6565,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2295,6 +2458,7 @@ export const seed: BankTransaction[] = [
     "cents": -3000,
     "currency": "USD",
     "balanceCents": 8583,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2309,6 +2473,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 11583,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2323,6 +2488,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 21583,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2337,6 +2503,7 @@ export const seed: BankTransaction[] = [
     "cents": 19000,
     "currency": "USD",
     "balanceCents": 22083,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2351,6 +2518,7 @@ export const seed: BankTransaction[] = [
     "cents": -6000,
     "currency": "USD",
     "balanceCents": 3083,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2365,6 +2533,7 @@ export const seed: BankTransaction[] = [
     "cents": -4488,
     "currency": "USD",
     "balanceCents": 9083,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2379,6 +2548,7 @@ export const seed: BankTransaction[] = [
     "cents": -1000,
     "currency": "USD",
     "balanceCents": 13571,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2393,6 +2563,7 @@ export const seed: BankTransaction[] = [
     "cents": 10000,
     "currency": "USD",
     "balanceCents": 14571,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2407,6 +2578,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 4571,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2421,6 +2593,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 9571,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2435,6 +2608,7 @@ export const seed: BankTransaction[] = [
     "cents": 4488,
     "currency": "USD",
     "balanceCents": 10071,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2449,6 +2623,7 @@ export const seed: BankTransaction[] = [
     "cents": -500,
     "currency": "USD",
     "balanceCents": 5583,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2463,6 +2638,7 @@ export const seed: BankTransaction[] = [
     "cents": -10000,
     "currency": "USD",
     "balanceCents": 6083,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2477,6 +2653,7 @@ export const seed: BankTransaction[] = [
     "cents": -29700,
     "currency": "USD",
     "balanceCents": 16083,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2491,6 +2668,7 @@ export const seed: BankTransaction[] = [
     "cents": -5000,
     "currency": "USD",
     "balanceCents": 45783,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2505,6 +2683,7 @@ export const seed: BankTransaction[] = [
     "cents": 50000,
     "currency": "USD",
     "balanceCents": 50783,
+    "counterpartyAccount": "2910",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2519,6 +2698,7 @@ export const seed: BankTransaction[] = [
     "cents": -2000,
     "currency": "USD",
     "balanceCents": 783,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2533,6 +2713,7 @@ export const seed: BankTransaction[] = [
     "cents": -34900,
     "currency": "USD",
     "balanceCents": 2783,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2547,6 +2728,7 @@ export const seed: BankTransaction[] = [
     "cents": -1059,
     "currency": "USD",
     "balanceCents": 37683,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   },
   {
@@ -2561,6 +2743,7 @@ export const seed: BankTransaction[] = [
     "cents": -27,
     "currency": "USD",
     "balanceCents": 38742,
+    "counterpartyAccount": "",
     "source": "Relay 2026-09-01 #8661.csv"
   }
 ];

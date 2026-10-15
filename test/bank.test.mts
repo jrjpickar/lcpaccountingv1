@@ -40,3 +40,16 @@ test('bank endpoint enforces auth, validates preview, imports idempotently and s
  assert.equal((await handler(req({action:'categorize',ids:[id],category:'bogus'}))).status,400);
  assert.equal((await handler(req({action:'import',files:[{name:'Relay #8661.csv',text:'bad'}]}))).status,400);
 });
+
+test('CSV rules classify ACH capital, named transfers and escrow without counting capital as profit',async()=>{
+ const {classify}=await import('../netlify/functions/lib/bank-metrics.mts');
+ const rows=seed.map(t=>({...t,...classify(t)}));
+ assert.equal(rows.filter(t=>t.category==='Uncategorized').length,0);
+ assert.equal(rows.filter(t=>t.category==='Owner contribution').reduce((s,t)=>s+t.cents,0),400700);
+ assert.equal(rows.filter(t=>t.category==='Owner contribution'&&t.owner==='Art').reduce((s,t)=>s+t.cents,0),266000);
+ const total=seed.find(t=>t.payee==='TOTAL CHECKING')!;assert.equal(classify(total).owner,'');assert.equal(classify(total,{'TOTAL CHECKING':'Bryce'}).owner,'Bryce');
+ assert.equal(rows.filter(t=>t.category==='Revenue').reduce((s,t)=>s+t.cents,0),2195268);
+ const m=metrics(rows);assert.equal(m.inflow,2596087);assert.equal(m.outflow,2569087);assert.equal(m.netProfit,1512280);
+ assert.ok(rows.some(t=>t.category==='Transfer'&&t.type==='Spend'));
+ assert.ok(rows.filter(t=>t.category==='Revenue').every(t=>t.needsReview));
+});

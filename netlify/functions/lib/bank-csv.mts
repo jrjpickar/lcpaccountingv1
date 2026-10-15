@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-export type BankTransaction = { id: string; account: string; date: string; payee: string; type: string; description: string; reference: string; status: string; cents: number; currency: string; balanceCents: number; source: string };
+export type BankTransaction = { id: string; account: string; counterpartyAccount?: string; date: string; payee: string; type: string; description: string; reference: string; status: string; cents: number; currency: string; balanceCents: number; source: string };
 export function csvRows(text: string): string[][] {
   const rows: string[][] = []; let row: string[] = [], cell = '', quoted = false;
   text = text.replace(/^\uFEFF/, '');
@@ -29,6 +29,6 @@ export function parseBankCSV(text: string, source: string, accountOverride=''): 
     if(!/^[A-Z]{3}$/.test(row.Currency))throw new Error('Invalid currency');
     const item={account,date,payee:row.Payee,type:row['Transaction Type'],description:row.Description,reference:row.Reference,status:row.Status,cents:cents(row.Amount),currency:row.Currency,balanceCents:cents(row.Balance)};
     const canonical=JSON.stringify({...item,counterparty:row['Account #']});const ordinal=(seen.get(canonical)||0)+1;seen.set(canonical,ordinal);
-    return {id:createHash('sha256').update(canonical+'|'+ordinal).digest('hex'),...item,source};
+    return {id:createHash('sha256').update(canonical+'|'+ordinal).digest('hex'),...item,counterpartyAccount:row['Account #'],source};
   }catch(e:any){throw new Error(`${source}, row ${i+2}: ${e.message}`);} });
 }

@@ -72,3 +72,8 @@
   from = "/api/access"
   to = "/.netlify/functions/access"
   status = 200
+
+[[redirects]]
+  from = "/api/bank-transactions"
+  to = "/.netlify/functions/bank-transactions"
+  status = 200

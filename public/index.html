@@ -950,6 +950,7 @@
     <a href="#" data-view="bills">Bills</a>
     <a href="#" data-view="partners">Partners</a>
     <a href="#" data-view="reports">Reports</a>
+    <a href="#" data-view="bank">Bank &amp; P&amp;L</a>
     <a href="#" data-view="access" id="access-tab" hidden>Access</a>
   </div>
 
@@ -1144,6 +1145,37 @@
           <tbody id="access-activity-rows"></tbody>
         </table>
       </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-bank">
+    <div class="access-card">
+      <h3>Bank transactions & cash-basis P&L</h3>
+      <p class="access-sub">183 transactions from your two Relay archives are included. Account 8662 has no activity in the supplied statements. October is partial. Bank data is separate from deal/bill reports to prevent double counting.</p>
+      <p class="access-intro"><b>Provisional until reviewed.</b> Merchant-based categories are suggestions. Escrow deposits, funding, royalties, commissions and transfers may require your classification. Uncategorized items are excluded from P&L. Transfers, owner contributions and distributions are excluded from profit. All-account totals combine accounts that may belong to different businesses; filter to the accounts appropriate for your entity. Financial metrics use SETTLED transactions only; cash totals include transfers and owner funding.</p>
+      <div class="access-add">
+        <label>Account <select id="bank-account" class="access-input"></select></label>
+        <label>Currency <select id="bank-currency" class="access-input"></select></label>
+        <label>From <input id="bank-from" type="date" class="access-input"></label>
+        <label>Through <input id="bank-to" type="date" class="access-input"></label>
+        <button id="bank-refresh" class="btn">Refresh bank data</button>
+      </div>
+    </div>
+    <div id="bank-kpis" class="aging-strip" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:20px"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px">
+      <div class="access-card"><h3>Cash-basis P&L · selected period</h3><div id="bank-pl"></div></div>
+      <div class="access-card"><h3>Expenses by category</h3><div id="bank-expenses"></div></div>
+    </div>
+    <div class="access-card"><h3>Monthly performance</h3><div class="access-table-wrap" id="bank-months"></div></div>
+    <div class="access-card">
+      <h3>Upload Relay CSV statements</h3><p class="access-sub">Choose one or more CSVs (unzip archives first). Keep the original #account.csv filenames. Repeat imports skip identical statement rows; edited descriptions or changed rows may need review.</p>
+      <div class="access-add"><input type="file" id="bank-files" accept=".csv,text/csv" multiple><input id="bank-account-override" class="access-input" placeholder="Statement account if filename was renamed" aria-label="Statement account override"><button id="bank-preview" class="btn">Preview import</button><button id="bank-import" class="btn" disabled>Import transactions</button></div>
+      <p id="bank-preview-result" role="status" style="margin:14px 0 0">Preview the files before importing.</p>
+    </div>
+    <div class="access-card"><h3>Review transactions</h3><p class="access-sub">Search and review-only controls affect the transaction list. Financial metrics follow the account, currency and date filters above. Confirm suggested categories with the checkboxes or change a row's category to save it.</p>
+      <div class="access-add"><input id="bank-search" class="access-input" placeholder="Search payee or reference" aria-label="Search transactions"><label><input type="checkbox" id="bank-review"> Needs review only</label><select id="bank-bulk-category" class="access-input" aria-label="Category for selected rows"></select><button id="bank-apply" class="btn">Set selected category</button><button id="bank-confirm" class="btn">Confirm selected suggestions</button></div>
+      <p id="bank-message" role="status"></p><p id="bank-count" class="access-sub"></p>
+      <div class="access-table-wrap"><table class="access-table"><thead><tr><th>Select</th><th>Date</th><th>Account</th><th>Payee / reference</th><th>Status</th><th>Amount</th><th>Category</th></tr></thead><tbody id="bank-table"></tbody></table></div><button id="bank-more" class="btn" hidden>Show more</button>
     </div>
   </section>
 
@@ -4143,7 +4175,7 @@
   var views = document.querySelectorAll('.view');
   var titleEl = document.getElementById('page-title');
   var newBtn = document.getElementById('new-btn');
-  var titles = {deals: 'Deals', bills: 'Bills', partners: 'Partners', reports: 'Reports', access: 'Access'};
+  var titles = {deals: 'Deals', bills: 'Bills', partners: 'Partners', reports: 'Reports', bank: 'Bank & P&L', access: 'Access'};
   var newLabels = {deals: null, bills: '+ New bill', partners: '+ Partner entry', reports: null, access: null};
   var currentView = 'deals';
 
@@ -4170,8 +4202,9 @@
       switchToTab(tab.getAttribute('data-view'));
     });
   });
-  switchToTab('deals');
-  try { var lastTab = localStorage.getItem('ghl-ledger-tab'); if (lastTab && lastTab !== 'access' && titles[lastTab]) switchToTab(lastTab); } catch (e) {}
+  var initialTab = 'deals';
+  try { var lastTab = localStorage.getItem('ghl-ledger-tab'); if (lastTab && lastTab !== 'access' && titles[lastTab]) initialTab = lastTab; } catch (e) {}
+  switchToTab(initialTab);
 
   // "Needs attention" - chips for things worth a look right now, on every tab.
   function renderAttentionBar(){
@@ -4359,6 +4392,40 @@
     state.session = info; renderWhoami(info); applyRole(info || {});
   });
 })();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let rows=[],cats=[],files=[],limit=100,busy=false;
+const expenses=['Marketing','Software','Professional fees','Bank fees','Meals','Payroll','Other expense'];
+const money=(v,c='USD')=>new Intl.NumberFormat('en-US',{style:'currency',currency:c}).format(v/100);
+async function api(body){const r=await fetch('/api/bank-transactions',body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d;}
+function selected(){return rows.filter(t=>(!$('bank-account').value||t.account===$('bank-account').value)&&(!$('bank-from').value||t.date>=$('bank-from').value)&&(!$('bank-to').value||t.date<=$('bank-to').value)&&t.currency===$('bank-currency').value);}
+function stats(list){let r={income:0,other:0,cost:0,expense:0,inflow:0,outflow:0,unknown:0,review:0};for(const t of list){if(t.status!=='SETTLED')continue;if(t.cents>0)r.inflow+=t.cents;else r.outflow-=t.cents;if(!t.reviewed)r.review++;if(t.category==='Revenue')r.income+=t.cents;else if(t.category==='Other income')r.other+=t.cents;else if(t.category==='Cost of revenue')r.cost-=t.cents;else if(expenses.includes(t.category))r.expense-=t.cents;else if(t.category==='Uncategorized')r.unknown++;}r.gross=r.income-r.cost;r.net=r.gross+r.other-r.expense;return r;}
+function render(){const currency=$('bank-currency').value||'USD',fmt=v=>money(v,currency),all=selected(),list=all.filter(t=>(!$('bank-search').value||(t.payee+' '+t.reference+' '+t.description).toLowerCase().includes($('bank-search').value.toLowerCase()))&&(!$('bank-review').checked||!t.reviewed));const r=stats(all);
+$('bank-kpis').innerHTML=[['Cash in',fmt(r.inflow)],['Cash out',fmt(r.outflow)],['Net cash movement',fmt(r.inflow-r.outflow)],['Provisional net profit',fmt(r.net)],['Uncategorized',r.unknown+' transactions'],['Needs review',r.review+' transactions']].map(([k,v])=>'<div class="aging-tile"><div class="label">'+k+'</div><div class="value">'+esc(v)+'</div></div>').join('');
+$('bank-pl').innerHTML='<table class="access-table"><tbody>'+[['Operating revenue',r.income],['Cost of revenue',-r.cost],['Gross profit',r.gross],['Operating expenses',-r.expense],['Other income',r.other],['Net profit / loss',r.net]].map(([k,v])=>'<tr><td>'+k+'</td><td style="text-align:right">'+fmt(v)+'</td></tr>').join('')+'<tr><td>Gross margin</td><td style="text-align:right">'+(r.income? (r.gross/r.income*100).toFixed(1)+'%':'—')+'</td></tr><tr><td>Net margin</td><td style="text-align:right">'+(r.income?(r.net/r.income*100).toFixed(1)+'%':'—')+'</td></tr></tbody></table>';
+const months=[...new Set(all.map(t=>t.date.slice(0,7)))].sort();
+$('bank-months').innerHTML='<table class="access-table"><thead><tr><th>Month</th><th>Revenue + other income</th><th>Costs + expenses</th><th>Net profit</th><th>Net cash</th></tr></thead><tbody>'+months.map(m=>{const s=stats(all.filter(t=>t.date.startsWith(m)));return '<tr><td>'+m+'</td><td>'+fmt(s.income+s.other)+'</td><td>'+fmt(s.cost+s.expense)+'</td><td>'+fmt(s.net)+'</td><td>'+fmt(s.inflow-s.outflow)+'</td></tr>';}).join('')+'</tbody></table>';
+$('bank-expenses').innerHTML=expenses.concat(['Cost of revenue']).map(c=>{let total=-all.filter(t=>t.category===c).reduce((s,t)=>s+t.cents,0);return '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>'+c+'</span><b>'+fmt(total)+'</b></div>';}).join('');
+$('bank-count').textContent=list.length+' matching transactions · '+all.length+' in financial scope';
+$('bank-table').innerHTML=list.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,limit).map(t=>'<tr><td><input type="checkbox" class="bank-select" value="'+t.id+'" aria-label="Select transaction"></td><td>'+t.date+'</td><td>••'+esc(t.account)+'</td><td>'+esc(t.payee)+'<span class="sub">'+esc(t.reference||t.description)+'</span></td><td>'+esc(t.status)+'</td><td style="white-space:nowrap">'+fmt(t.cents)+'</td><td><select class="access-input bank-category" data-id="'+t.id+'" aria-label="Transaction category">'+cats.map(c=>'<option'+(c===t.category?' selected':'')+'>'+c+'</option>').join('')+'</select><span class="sub">'+(t.reviewed?'Reviewed':'Suggested · needs review')+'</span></td></tr>').join('');$('bank-more').hidden=list.length<=limit;
+}
+async function load(){try{const d=await api();rows=d.rows;cats=d.categories;$('bank-account').innerHTML='<option value="">All accounts (combined)</option>'+d.accounts.map(a=>'<option>'+a+'</option>').join('');$('bank-currency').innerHTML=[...new Set(rows.map(t=>t.currency))].sort().map(c=>'<option>'+c+'</option>').join('');$('bank-bulk-category').innerHTML=cats.map(c=>'<option>'+c+'</option>').join('');render();}catch(e){$('bank-message').textContent=e.message;}}
+async function categorize(ids,category){if(!ids.length){$('bank-message').textContent='Select transactions first.';return;}try{await api({action:'categorize',ids,category});rows.forEach(t=>{if(ids.includes(t.id)){t.category=category;t.reviewed=true;}});render();$('bank-message').textContent='Categories saved.';}catch(e){$('bank-message').textContent=e.message;render();}}
+$('bank-table').addEventListener('change',e=>{if(e.target.classList.contains('bank-category'))categorize([e.target.dataset.id],e.target.value);});
+$('bank-apply').onclick=()=>categorize([...document.querySelectorAll('.bank-select:checked')].map(e=>e.value),$('bank-bulk-category').value);
+$('bank-confirm').onclick=()=>{const ids=[...document.querySelectorAll('.bank-select:checked')].map(e=>e.value);if(!ids.length){$('bank-message').textContent='Select transactions first.';return;} (async()=>{for(const c of cats){const group=rows.filter(t=>ids.includes(t.id)&&t.category===c).map(t=>t.id);if(group.length)await categorize(group,c);}})();};
+for(const id of ['bank-account','bank-currency','bank-from','bank-to','bank-search','bank-review'])$(id).oninput=()=>{limit=100;render();};
+$('bank-more').onclick=()=>{limit+=100;render();};
+function invalidate(){files=[];$('bank-import').disabled=true;$('bank-preview-result').textContent='Preview the files before importing.';}
+$('bank-files').onchange=invalidate;$('bank-account-override').oninput=invalidate;
+$('bank-preview').onclick=async()=>{if(busy)return;busy=true;$('bank-import').disabled=true;try{files=await Promise.all([...$('bank-files').files].map(async f=>({name:f.name,text:await f.text()})));if(!files.length)throw new Error('Choose at least one CSV file.');const d=await api({action:'preview',files,account:$('bank-account-override').value});$('bank-preview-result').textContent=d.added+' new transactions · '+d.duplicates+' duplicates skipped · '+d.total+' parsed. '+d.sample.slice(0,3).map(t=>t.date+' '+t.payee+' '+money(t.cents,t.currency)).join(' / ');$('bank-import').disabled=d.added===0;}catch(e){files=[];$('bank-preview-result').textContent=e.message;}finally{busy=false;}};
+$('bank-import').onclick=async()=>{if(busy)return;busy=true;$('bank-import').disabled=true;try{const d=await api({action:'import',files,account:$('bank-account-override').value});$('bank-preview-result').textContent='Imported '+d.added+' transactions; skipped '+d.duplicates+' duplicates.';await load();}catch(e){$('bank-preview-result').textContent=e.message;}finally{busy=false;}};
+$('bank-refresh').onclick=load;
+load();
+})();
+
 </script>
 </body>
 </html>

@@ -6,7 +6,10 @@ export function getStore(name) {
   const m = stores.get(name);
   const read = (key, type) => { const e = m.get(key); if (!e) return null; return type === 'json' ? JSON.parse(e.v) : e.v; };
   return {
-    async get(key, opts = {}) { return read(key, opts.type); },
+    async get(key, opts = {}) {
+      if (key === "secret" && opts.consistency !== "strong") throw new Error("Auth secret reads must be strongly consistent");
+      return read(key, opts.type);
+    },
     async getWithMetadata(key, opts = {}) { const e = m.get(key); return e ? { data: read(key, opts.type), etag: e.etag, metadata: {} } : null; },
     async set(key, v, opts = {}) { if (opts.onlyIfNew && m.has(key)) return { modified: false }; m.set(key, { v: String(v), etag: 'e' + (++n) }); return { modified: true }; },
     async setJSON(key, v, opts = {}) {

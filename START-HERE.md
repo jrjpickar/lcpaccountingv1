@@ -35,6 +35,7 @@ functions `netlify/functions` (already set in `netlify.toml`).
 | `GHL_LOCATION_ID` | Required | LocalCare sub-account id |
 | `GHL_APP_SHARED_SECRET` | Required | Shared Secret from 2.2 |
 | `SENIOR_ADMINS` | Recommended | Jesse's GHL login email (comma-separate more). `brycetooley@gmail.com` is always senior. **If Bryce's GHL login uses a different email, add it here.** |
+| `LEDGER_AUTH_SECRET` | Optional | Session-signing secret, at least 32 characters (recommend 64 random hex characters). Same value in Functions and Edge Functions. Otherwise generated in Blobs with strongly consistent reads. Changing it signs everyone out. |
 | `LEDGER_PASSWORD` | Optional | 12–256 characters. Outside-GHL password; takes precedence over LEDGER_PIN. Listed email required; user level only. |
 | `LEDGER_PIN` | Optional | 4-12 digits. Lets listed people sign in outside GHL (user level only) |
 | `DEALS_PIPELINE_ID` | Optional | Only needed if the pipeline isn't found automatically |

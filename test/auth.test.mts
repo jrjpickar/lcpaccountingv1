@@ -7,6 +7,7 @@ import { createCipheriv, createHash, randomBytes } from "node:crypto";
 process.env.GHL_APP_SHARED_SECRET = "test-shared-secret";
 process.env.GHL_LOCATION_ID = "LOC123";
 process.env.LEDGER_PIN = "482193";
+delete process.env.LEDGER_AUTH_SECRET;
 delete process.env.LEDGER_PASSWORD;
 delete process.env.SENIOR_ADMINS;
 delete process.env.MAKE_CALLBACK_SECRET;
@@ -279,4 +280,17 @@ test("edge gate: sign-in page without a session, the app with one", async () => 
     process.env.LEDGER_PASSWORD = "short";
     assert.equal(auth.getPin(), null);
   } finally { delete process.env.LEDGER_PASSWORD; }
+});
+
+test("explicit session signing secret is supported and validated", async () => {
+  process.env.LEDGER_AUTH_SECRET = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  try {
+    assert.equal(await auth.getAuthSecret(), process.env.LEDGER_AUTH_SECRET);
+    const { token } = await auth.signSession({ id: "u1", name: "A", email: "a@example.com" }, "ghl");
+    assert.ok(await auth.verifyToken(token));
+    process.env.LEDGER_AUTH_SECRET = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789";
+    assert.equal(await auth.verifyToken(token), null);
+    process.env.LEDGER_AUTH_SECRET = "short";
+    await assert.rejects(auth.getAuthSecret(), /at least 32/);
+  } finally { delete process.env.LEDGER_AUTH_SECRET; }
 });

@@ -105,15 +105,20 @@ export const ghlSignInConfigured = () => !!env("GHL_APP_SHARED_SECRET");
 // ---------- secret ----------
 let cachedSecret: string | null = null;
 export async function getAuthSecret(): Promise<string> {
+  const configured = env("LEDGER_AUTH_SECRET");
+  if (configured) {
+    if (configured.length < 32) throw new Error("LEDGER_AUTH_SECRET must be at least 32 characters");
+    return configured;
+  }
   if (cachedSecret) return cachedSecret;
   const store = getStore(AUTH_STORE);
-  let secret = (await store.get("secret", { type: "text" })) as string | null;
+  let secret = (await store.get("secret", { type: "text", consistency: "strong" })) as string | null;
   if (!secret) {
     const bytes = crypto.getRandomValues(new Uint8Array(32));
     const fresh = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
     // onlyIfNew: if two cold starts race here, both end up reading the one that won.
     await store.set("secret", fresh, { onlyIfNew: true });
-    secret = (await store.get("secret", { type: "text" })) as string | null;
+    secret = (await store.get("secret", { type: "text", consistency: "strong" })) as string | null;
   }
   if (!secret) throw new Error("Could not initialize the auth secret");
   cachedSecret = secret;

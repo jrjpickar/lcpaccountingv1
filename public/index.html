@@ -574,6 +574,23 @@
   .aging-tile .label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; font-weight:700}
   .aging-tile .value{font-size:18px; font-weight:800; margin-top:6px; font-variant-numeric:tabular-nums}
   .aging-tile.warn .value{color:var(--overdue-ink)}
+  .aging-strip.period-kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); margin:6px 0 16px}
+  .period-kpis .sub{display:block; font-size:11px; color:var(--muted); font-weight:600; margin-top:4px}
+  .period-kpis .value.neg, .period-table .neg{color:var(--overdue-ink)}
+  .period-kpis .value.pos, .period-table .pos{color:var(--paid-ink)}
+  .period-table td, .period-table th{text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .period-table td:first-child, .period-table th:first-child, .period-table td:nth-child(2), .period-table th:nth-child(2){text-align:left}
+  .period-table tr.projected td{color:var(--muted); font-style:italic}
+  .period-table tr.projected td.neg{color:var(--overdue-ink)}
+  .period-table tr.inprogress td:first-child::after{content:' ●'; color:var(--series-rev); font-size:9px; vertical-align:middle}
+  .period-table tr.total td{font-weight:800; border-top:2px solid var(--line-strong)}
+  .period-pill{display:inline-block; font-size:10.5px; font-weight:700; font-style:normal; padding:2px 8px; border-radius:999px; background:var(--bg); color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+  .period-pill.actual{background:var(--paid-bg); color:var(--paid-ink)}
+  .period-pill.inprogress{background:var(--bg); color:var(--series-rev)}
+  .period-legend{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--muted); margin:4px 0 6px}
+  .period-legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+  .period-legend i.ln{height:3px; border-radius:2px; vertical-align:3px}
+  .period-legend i.proj{opacity:.4; outline:1px dashed currentColor}
 
   .report-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; align-items:start}
   .report-widget{position:relative; min-width:0}
@@ -1169,7 +1186,20 @@
     </div>
     <div class="access-card"><h3>Vendor spending trends</h3><div class="access-add"><select id="bank-chart-source" class="access-input" aria-label="Chart data source"><option value="bank">Bank CSV spending</option><option value="bills">Ledger vendor bills</option></select><select id="bank-chart-vendor" class="access-input" aria-label="Chart vendor"><option value="">All vendors</option></select></div><p id="bank-chart-note" class="access-sub" style="margin-top:14px"></p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px"><div><h3>Monthly trend</h3><div id="bank-vendor-line"></div></div><div><h3>Top vendors · selected period</h3><div id="bank-vendor-bars"></div></div></div></div>
     <div class="access-card"><h3>Partner contributions &amp; distributions</h3><p class="access-sub">External capital only, within the selected accounts and dates. Transfers between supplied Relay accounts are excluded here to avoid counting funding twice. This is activity in the supplied period, not a lifetime partner capital balance.</p><div class="access-add"><label>TOTAL CHECKING belongs to <select id="bank-total-owner" class="access-input"><option value="">Confirm owner</option><option>Art</option><option>Bryce</option><option>Jesse</option></select></label><label>Adv Plus Banking belongs to <select id="bank-adv-owner" class="access-input"><option value="">Confirm owner</option><option>Art</option><option>Bryce</option><option>Jesse</option></select></label></div><p class="access-sub">Adv Plus Banking is linked to Arturo Vazquez by the ACH Push reference. TOTAL CHECKING has no person's name in these CSVs.</p><div id="bank-capital" class="access-table-wrap"></div></div>
-    <div class="access-card"><h3>Monthly performance</h3><div class="access-table-wrap" id="bank-months"></div></div>
+    <div class="access-card" id="bank-periods-card">
+      <h3>Top line, spend &amp; bottom line · past and projected</h3>
+      <p class="access-sub">Top line = revenue + other income. Spend = cost of revenue + operating expenses. Bottom line = top line − spend. Transfers, owner capital and uncategorized items are left out. Follows the account, currency and date filters above.</p>
+      <div class="access-add">
+        <label>View <select id="bank-period-view" class="access-input"><option value="month">Monthly</option><option value="quarter">Quarterly</option></select></label>
+        <label>Project from <select id="bank-period-basis" class="access-input"><option value="3">Last 3 complete months (avg)</option><option value="6">Last 6 complete months (avg)</option><option value="1">Last complete month</option></select></label>
+        <label>Top-line assumption <select id="bank-period-rev" class="access-input"><option value="runrate">Same run-rate as spend basis</option><option value="zero">No new revenue (spend only)</option></select></label>
+        <label>Project ahead <select id="bank-period-ahead" class="access-input"><option value="3">3 months</option><option value="6" selected>6 months</option><option value="12">12 months</option></select></label>
+      </div>
+      <div id="bank-period-kpis" class="aging-strip period-kpis"></div>
+      <div id="bank-period-chart"></div>
+      <div class="access-table-wrap" id="bank-months"></div>
+      <p class="access-sub" id="bank-period-note" style="margin-top:12px"></p>
+    </div>
     <div class="access-card">
       <h3>Upload Relay CSV statements</h3><p class="access-sub">Choose one or more CSVs (unzip archives first). Keep the original #account.csv filenames. Repeat imports skip identical statement rows; edited descriptions or changed rows may need review.</p>
       <div class="access-add"><input type="file" id="bank-files" accept=".csv,text/csv" multiple><input id="bank-account-override" class="access-input" placeholder="Statement account if filename was renamed" aria-label="Statement account override"><button id="bank-preview" class="btn">Preview import</button><button id="bank-import" class="btn" disabled>Import transactions</button></div>
@@ -4409,12 +4439,110 @@ function render(){const currency=$('bank-currency').value||'USD',fmt=v=>money(v,
 $('bank-kpis').innerHTML=[['External cash in',fmt(r.inflow)],['External cash out',fmt(r.outflow)],['External net cash',fmt(r.inflow-r.outflow)],['Provisional net profit',fmt(r.net)],['Owner contributions',fmt(all.filter(t=>t.status==='SETTLED'&&t.category==='Owner contribution').reduce((s,t)=>s+t.cents,0))],['Uncategorized',r.unknown+' transactions'],['Needs review',r.review+' transactions']].map(([k,v])=>'<div class="aging-tile"><div class="label">'+k+'</div><div class="value">'+esc(v)+'</div></div>').join('');
 $('bank-capital').innerHTML='<table class="access-table"><thead><tr><th>Partner</th><th>External contributions</th><th>External distributions</th></tr></thead><tbody>'+['Art','Bryce','Jesse',''].map(owner=>{const items=all.filter(t=>t.owner===owner&&t.status==='SETTLED');return '<tr><td>'+esc(owner||'Owner not assigned')+'</td><td>'+fmt(items.filter(t=>t.category==='Owner contribution').reduce((s,t)=>s+t.cents,0))+'</td><td>'+fmt(-items.filter(t=>t.category==='Owner distribution').reduce((s,t)=>s+t.cents,0))+'</td></tr>';}).join('')+'</tbody></table>';
 $('bank-pl').innerHTML='<table class="access-table"><tbody>'+[['Operating revenue',r.income],['Cost of revenue',-r.cost],['Gross profit',r.gross],['Operating expenses',-r.expense],['Other income',r.other],['Net profit / loss',r.net]].map(([k,v])=>'<tr><td>'+k+'</td><td style="text-align:right">'+fmt(v)+'</td></tr>').join('')+'<tr><td>Gross margin</td><td style="text-align:right">'+(r.income? (r.gross/r.income*100).toFixed(1)+'%':'—')+'</td></tr><tr><td>Net margin</td><td style="text-align:right">'+(r.income?(r.net/r.income*100).toFixed(1)+'%':'—')+'</td></tr></tbody></table>';
-const months=[...new Set(all.map(t=>t.date.slice(0,7)))].sort();
-$('bank-months').innerHTML='<table class="access-table"><thead><tr><th>Month</th><th>Revenue + other income</th><th>Costs + expenses</th><th>Net profit</th><th>External net cash</th></tr></thead><tbody>'+months.map(m=>{const s=stats(all.filter(t=>t.date.startsWith(m)));return '<tr><td>'+m+'</td><td>'+fmt(s.income+s.other)+'</td><td>'+fmt(s.cost+s.expense)+'</td><td>'+fmt(s.net)+'</td><td>'+fmt(s.inflow-s.outflow)+'</td></tr>';}).join('')+'</tbody></table>';
+renderPeriods(all,fmt);
 $('bank-expenses').innerHTML=expenses.concat(['Cost of revenue']).map(c=>{let total=-all.filter(t=>t.category===c).reduce((s,t)=>s+t.cents,0);return '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>'+c+'</span><b>'+fmt(total)+'</b></div>';}).join('');
 $('bank-count').textContent=list.length+' matching transactions · '+all.length+' in financial scope';
 $('bank-table').innerHTML=list.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,limit).map(t=>'<tr><td><input type="checkbox" class="bank-select" value="'+t.id+'" aria-label="Select transaction"></td><td>'+t.date+'</td><td>••'+esc(t.account)+'</td><td>'+esc(t.payee)+'<span class="sub">'+esc(t.reference||t.description)+'</span><span class="sub">'+esc(t.reason)+'</span></td><td>'+esc(t.status)+'</td><td style="white-space:nowrap">'+fmt(t.cents)+'</td><td><select class="access-input bank-category" data-id="'+t.id+'" aria-label="Transaction category">'+cats.map(c=>'<option'+(c===t.category?' selected':'')+'>'+c+'</option>').join('')+'</select><span class="sub">'+(t.reviewed?(t.classificationSource==='Manual'?'Reviewed':'Classified from CSV'):'Needs review')+'</span></td><td><select class="access-input bank-owner" data-id="'+t.id+'" aria-label="Partner">'+['','Art','Bryce','Jesse'].map(o=>'<option value="'+o+'"'+(o===(t.owner||'')?' selected':'')+'>'+esc(o||'Unassigned')+'</option>').join('')+'</select></td></tr>').join('');$('bank-more').hidden=list.length<=limit;renderVendorCharts();
 }
+/* ---------- Top line / spend / bottom line by month or quarter, past + projected ----------
+   Actual periods come from SETTLED bank rows in the selected scope. The
+   current month is "in progress": actual to date plus the run-rate for the
+   days left. Future periods use the run-rate (average of the last N complete
+   months). Quarterly view rolls the same months up and extends the
+   projection to finish the last quarter. */
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const addMonths=(m,n)=>{let y=+m.slice(0,4),mo=+m.slice(5,7)-1+n;y+=Math.floor(mo/12);mo=((mo%12)+12)%12;return y+'-'+String(mo+1).padStart(2,'0');};
+const mLabel=m=>MON[+m.slice(5,7)-1]+' '+m.slice(0,4), mShort=m=>MON[+m.slice(5,7)-1]+" '"+m.slice(2,4);
+const qKey=m=>m.slice(0,4)+'-Q'+(Math.floor((+m.slice(5,7)-1)/3)+1), qLabel=q=>q.slice(5)+' '+q.slice(0,4);
+const ptToday=()=>{try{return new Date().toLocaleDateString('en-CA',{timeZone:'America/Los_Angeles'});}catch(e){return new Date().toISOString().slice(0,10);}};
+const daysIn=m=>new Date(Date.UTC(+m.slice(0,4),+m.slice(5,7),0)).getUTCDate();
+function compactCents(c){const n=c/100,a=Math.abs(n),sg=n<0?'-':'';if(a>=1e6)return sg+'$'+(a/1e6).toFixed(1).replace(/\.0$/,'')+'M';if(a>=1e3)return sg+'$'+(a/1e3).toFixed(a>=1e5?0:1).replace(/\.0$/,'')+'K';return sg+'$'+Math.round(a);}
+function periodModel(all){
+ const settled=all.filter(t=>t.status==='SETTLED'),byM={};
+ for(const t of settled)(byM[t.date.slice(0,7)]||=[]).push(t);
+ const dataMonths=Object.keys(byM).sort();if(!dataMonths.length)return null;
+ const today=ptToday(),cur=today.slice(0,7),through=$('bank-to').value;
+ const projecting=!(through&&through.slice(0,7)<cur)&&dataMonths[0]<=cur;
+ const lastActual=projecting?cur:dataMonths.at(-1);
+ const months=[];for(let m=dataMonths[0];m<=lastActual&&months.length<240;m=addMonths(m,1)){const s=stats(byM[m]||[]);months.push({key:m,top:s.income+s.other,cost:s.cost,opex:s.expense,cash:s.inflow-s.outflow,status:m===cur&&projecting?'inprogress':'actual'});}
+ // Run-rate from the last N complete months. A first month whose history starts
+ // after the 7th is left out - a few days of activity would drag the average down.
+ const firstDay=settled.map(t=>t.date).sort()[0];let complete=months.filter(p=>p.status==='actual'&&p.key<cur);
+ const skipped=complete.length>1&&complete[0].key===firstDay.slice(0,7)&&+firstDay.slice(8,10)>7?complete[0].key:null;if(skipped)complete=complete.slice(1);
+ const n=+$('bank-period-basis').value||3,basis=complete.slice(-n);
+ const avg=f=>basis.length?basis.reduce((a,p)=>a+p[f],0)/basis.length:0;
+ const rr={top:$('bank-period-rev').value==='zero'?0:avg('top'),cost:avg('cost'),opex:avg('opex')};
+ for(const p of months){p.spend=p.cost+p.opex;p.net=p.top-p.spend;p.toDate={top:p.top,spend:p.spend,net:p.net};}
+ if(projecting){
+  const ip=months.at(-1),left=(daysIn(cur)-(+today.slice(8,10)))/daysIn(cur);
+  if(ip&&ip.key===cur&&left>0){ip.top+=rr.top*left;ip.cost+=rr.cost*left;ip.opex+=rr.opex*left;ip.spend=ip.cost+ip.opex;ip.net=ip.top-ip.spend;}
+  let ahead=+$('bank-period-ahead').value||6,end=addMonths(cur,ahead);
+  if($('bank-period-view').value==='quarter'){while(qKey(addMonths(end,1))===qKey(end))end=addMonths(end,1);}
+  for(let m=addMonths(cur,1);m<=end;m=addMonths(m,1))months.push({key:m,top:rr.top,cost:rr.cost,opex:rr.opex,spend:rr.cost+rr.opex,net:rr.top-rr.cost-rr.opex,cash:null,status:'projected',toDate:{top:0,spend:0,net:0}});
+ }
+ return {months,rr:{...rr,spend:rr.cost+rr.opex,net:rr.top-rr.cost-rr.opex},basis,skipped,projecting,cur,today,n};
+}
+function rollQuarters(months){
+ const qs=[];for(const p of months){let q=qs.at(-1);if(!q||q.key!==qKey(p.key)){q={key:qKey(p.key),top:0,cost:0,opex:0,spend:0,net:0,cash:0,hasCash:false,toDate:{top:0,spend:0,net:0},sts:new Set()};qs.push(q);}
+  for(const f of ['top','cost','opex','spend','net'])q[f]+=p[f];for(const f of ['top','spend','net'])q.toDate[f]+=p.toDate[f];if(p.cash!=null){q.cash+=p.cash;q.hasCash=true;}q.sts.add(p.status);}
+ for(const q of qs){q.status=q.sts.size===1?[...q.sts][0]:'inprogress';if(!q.hasCash)q.cash=null;}
+ return qs;
+}
+function periodChartSVG(periods,label){
+ const W=760,H=290,L=62,R=14,T=26,B=40,pw=W-L-R,ph=H-T-B;
+ let max=0,min=0;for(const p of periods){max=Math.max(max,p.top,p.spend,p.net);min=Math.min(min,p.net);}
+ if(max<=0&&min>=0)return '<p class="access-sub">No activity in this scope yet.</p>';
+ const span=(max-min)||1,step=Math.pow(10,Math.floor(Math.log10(span/4)));const nice=[1,2,2.5,5,10].map(f=>f*step).find(v=>span/v<=5)||step*10;
+ const hi=Math.ceil(max/nice)*nice,lo=Math.floor(min/nice)*nice,Y=v=>T+ph*(hi-v)/((hi-lo)||1);
+ const band=pw/periods.length,bw=Math.max(4,Math.min(26,band*0.32)),out=[];
+ for(let v=lo;v<=hi+1e-6;v+=nice)out.push('<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"'+(Math.abs(v)<1e-6?' stroke-width="1.5" stroke="var(--line-strong)"':'')+'/><text x="'+(L-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" fill="var(--muted)" font-size="11">'+compactCents(v)+'</text>');
+ const firstProj=periods.findIndex(p=>p.status!=='actual');
+ if(firstProj>-1){const x=L+band*firstProj;out.push('<rect x="'+x+'" y="'+T+'" width="'+(W-R-x)+'" height="'+ph+'" fill="var(--bg)" opacity=".55"/><text x="'+(x+6)+'" y="'+(T-9)+'" fill="var(--muted)" font-size="11" font-weight="700">Projected →</text>');}
+ const bar=(x,v0,v1,color,faded)=>{if(v1<=v0)return '';return '<rect x="'+x+'" y="'+Y(v1)+'" width="'+bw+'" height="'+(Y(v0)-Y(v1))+'" rx="3" fill="var('+color+')"'+(faded?' fill-opacity=".32" stroke="var('+color+')" stroke-dasharray="3 2"':'')+'/>';};
+ const labelEvery=Math.ceil(periods.length/Math.max(4,Math.floor(pw/62)));
+ periods.forEach((p,i)=>{const cx=L+band*i+band/2,x1=cx-bw-1.5,x2=cx+1.5;
+  const tip=label(p)+' ('+(p.status==='actual'?'actual':p.status==='projected'?'projected':'in progress, projected')+')\nTop line: '+money(p.top)+'\nSpend: '+money(p.spend)+'\nBottom line: '+money(p.net)+(p.status==='inprogress'?'\nTo date: '+money(p.toDate.top)+' in / '+money(p.toDate.spend)+' spent':'');
+  let g='<g><title>'+esc(tip)+'</title><rect x="'+(L+band*i)+'" y="'+T+'" width="'+band+'" height="'+ph+'" fill="transparent"/>';
+  if(p.status==='inprogress'){g+=bar(x1,0,Math.max(0,p.toDate.top),'--series-rev')+bar(x1,Math.max(0,p.toDate.top),p.top,'--series-rev',true)+bar(x2,0,Math.max(0,p.toDate.spend),'--series-exp')+bar(x2,Math.max(0,p.toDate.spend),p.spend,'--series-exp',true);}
+  else{const f=p.status==='projected';g+=bar(x1,0,p.top,'--series-rev',f)+bar(x2,0,p.spend,'--series-exp',f);}
+  if(i%labelEvery===0)g+='<text x="'+cx+'" y="'+(H-B+18)+'" text-anchor="middle" fill="var(--muted)" font-size="11">'+esc(label(p,true))+'</text>';
+  out.push(g+'</g>');});
+ const pts=periods.map((p,i)=>[L+band*i+band/2,Y(p.net)]);
+ const solidEnd=firstProj===-1?pts.length:firstProj+1;
+ if(solidEnd>1)out.push('<polyline points="'+pts.slice(0,solidEnd).map(q=>q.join(',')).join(' ')+'" fill="none" stroke="var(--series-col)" stroke-width="2.5" stroke-linejoin="round"/>');
+ if(firstProj>-1&&pts.length-Math.max(0,firstProj-1)>1)out.push('<polyline points="'+pts.slice(Math.max(0,firstProj-1)).map(q=>q.join(',')).join(' ')+'" fill="none" stroke="var(--series-col)" stroke-width="2.5" stroke-dasharray="6 5" stroke-linejoin="round"/>');
+ periods.forEach((p,i)=>out.push('<circle cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="4" fill="'+(p.status==='actual'?'var(--series-col)':'var(--surface)')+'" stroke="var(--series-col)" stroke-width="2" pointer-events="none"/>'));
+ return '<div class="period-legend"><span><i style="background:var(--series-rev)"></i>Top line</span><span><i style="background:var(--series-exp)"></i>Spend</span><span><i class="ln" style="background:var(--series-col)"></i>Bottom line</span><span><i class="proj" style="background:var(--muted);color:var(--muted)"></i>Projected</span></div><svg role="img" aria-label="Top line, spend and bottom line by period" viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block">'+out.join('')+'</svg>';
+}
+function renderPeriods(all,fmt){
+ const model=periodModel(all),quarterly=$('bank-period-view').value==='quarter';
+ if(!model){$('bank-period-kpis').innerHTML='';$('bank-period-chart').innerHTML='';$('bank-months').innerHTML='<p class="access-sub">No settled transactions in this scope.</p>';$('bank-period-note').textContent='';return;}
+ const periods=quarterly?rollQuarters(model.months):model.months;
+ const label=(p,short)=>quarterly?qLabel(p.key):short?mShort(p.key):mLabel(p.key);
+ const signCls=v=>v<0?'neg':v>0?'pos':'';
+ const rr=model.rr,curQ=rollQuarters(model.months).find(q=>q.key===qKey(model.cur));
+ const proj=model.months.filter(p=>p.status!=='actual'),projSpend=proj.reduce((a,p)=>a+p.spend-p.toDate.spend,0),projNet=proj.reduce((a,p)=>a+p.net-p.toDate.net,0);
+ const basisTxt=model.basis.length?(model.basis.length===1?mLabel(model.basis[0].key):mShort(model.basis[0].key)+' – '+mShort(model.basis.at(-1).key)):'no complete months';
+ const tile=(k,v,sub,cls)=>'<div class="aging-tile"><div class="label">'+k+'</div><div class="value '+(cls||'')+'">'+v+'</div><span class="sub">'+esc(sub)+'</span></div>';
+ $('bank-period-kpis').innerHTML=model.projecting?[
+  tile('Monthly top line · run-rate',fmt(rr.top),$('bank-period-rev').value==='zero'?'Assumed $0 (spend only)':'Avg of '+basisTxt),
+  tile('Monthly spend · run-rate',fmt(rr.spend),'Avg of '+basisTxt),
+  tile('Monthly bottom line · run-rate',fmt(rr.net),'Top line − spend',signCls(rr.net)),
+  curQ?tile(qLabel(curQ.key)+' bottom line · projected',fmt(curQ.net),fmt(curQ.top)+' in · '+fmt(curQ.spend)+' spent',signCls(curQ.net)):'',
+  tile('Spend still to come',fmt(projSpend),'Rest of '+mShort(model.cur)+' + next '+(proj.length-1)+' mo'),
+  tile('Bottom line still to come',fmt(projNet),'Same window',signCls(projNet))].join(''):'';
+ $('bank-period-chart').innerHTML=periodChartSVG(periods,label);
+ const pill=p=>'<span class="period-pill '+p.status+'">'+(p.status==='actual'?'Actual':p.status==='projected'?'Projected':'In progress')+'</span>';
+ const sub=(p,f)=>p.status==='inprogress'?'<span class="sub">'+fmt(p.toDate[f])+' to date</span>':'';
+ const margin=p=>p.top>0?(p.net/p.top*100).toFixed(1)+'%':'—';
+ const row=p=>'<tr class="'+p.status+'"><td>'+esc(label(p))+'</td><td>'+pill(p)+'</td><td>'+fmt(p.top)+sub(p,'top')+'</td><td>'+fmt(p.cost)+'</td><td>'+fmt(p.opex)+'</td><td>'+fmt(p.spend)+sub(p,'spend')+'</td><td class="'+signCls(p.net)+'">'+fmt(p.net)+sub(p,'net')+'</td><td>'+margin(p)+'</td><td>'+(p.cash==null?'—':fmt(p.cash))+'</td></tr>';
+ const total=(name,list)=>{if(!list.length)return '';const t={top:0,cost:0,opex:0,spend:0,net:0};for(const p of list)for(const f in t)t[f]+=p[f];return '<tr class="total"><td>'+name+'</td><td></td><td>'+fmt(t.top)+'</td><td>'+fmt(t.cost)+'</td><td>'+fmt(t.opex)+'</td><td>'+fmt(t.spend)+'</td><td class="'+signCls(t.net)+'">'+fmt(t.net)+'</td><td>'+margin(t)+'</td><td></td></tr>';};
+ const past=periods.filter(p=>p.status==='actual'),future=periods.filter(p=>p.status!=='actual');
+ $('bank-months').innerHTML='<table class="access-table period-table"><thead><tr><th>'+(quarterly?'Quarter':'Month')+'</th><th>Status</th><th>Top line</th><th>Cost of revenue</th><th>Operating spend</th><th>Total spend</th><th>Bottom line</th><th>Net margin</th><th>External net cash</th></tr></thead><tbody>'+periods.map(row).join('')+total('Past total (actual)',past)+total('Projected total (incl. in progress)',future)+'</tbody></table>';
+ $('bank-period-note').textContent=!model.projecting?'Projections are hidden because the Through date ends before this month. Clear it to see the current and future periods.'
+  :'Projection = average of '+basisTxt+(model.basis.length<model.n?' (only '+model.basis.length+' complete month'+(model.basis.length===1?'':'s')+' available)':'')+(model.skipped?'; '+mLabel(model.skipped)+' is left out because its history starts mid-month':'')+'. '+mLabel(model.cur)+' is in progress: actual to date plus the run-rate for the days left. Wholesale fees are lumpy, so a single closing can swing the top-line run-rate; use "No new revenue" for a spend-only view.';
+}
+$('bank-period-view').onchange=$('bank-period-basis').onchange=$('bank-period-rev').onchange=$('bank-period-ahead').onchange=()=>render();
 async function load(){try{const d=await api();rows=d.rows;cats=d.categories;$('bank-total-owner').value=d.sources?.['TOTAL CHECKING']||'';$('bank-adv-owner').value=d.sources?.['Adv Plus Banking']||'Art';$('bank-account').innerHTML='<option value="business">Business P&L · Dodger City + LocalCare</option><option value="localcare">LocalCare · expense accounts</option><option value="2910">Dodger City · revenue / profit account</option><option value="partners">Partner payout accounts</option><option value="">All accounts · including partner accounts</option>'+d.accounts.filter(a=>a!=='2910').map(a=>'<option value="'+a+'">'+({'8661':'LocalCare operating · 8661','8662':'LocalCare reserve · 8662','2911':'Bryce allocation · 2911','7503':'Art allocation · 7503','7510':'Jesse allocation · 7510'}[a]||a)+'</option>').join('');$('bank-currency').innerHTML=[...new Set(rows.map(t=>t.currency))].sort().map(c=>'<option>'+c+'</option>').join('');$('bank-bulk-category').innerHTML=cats.map(c=>'<option>'+c+'</option>').join('');render();}catch(e){$('bank-message').textContent=e.message;}}
 async function categorize(ids,category){if(!ids.length){$('bank-message').textContent='Select transactions first.';return;}try{await api({action:'categorize',ids,category});rows.forEach(t=>{if(ids.includes(t.id)){t.category=category;t.reviewed=true;t.classificationSource='Manual';}});render();$('bank-message').textContent='Categories saved.';}catch(e){$('bank-message').textContent=e.message;render();}}
 $('bank-total-owner').onchange=()=>saveSource('TOTAL CHECKING',$('bank-total-owner').value);

@@ -70,13 +70,13 @@ button:disabled{opacity:.6;cursor:default}
 <div class="lock"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
 <h1>LocalCare Ledger</h1>
 ${o.notConfigured
-    ? `<p>Sign-in isn't set up yet.</p><div class="box">Set <b>GHL_APP_SHARED_SECRET</b> (the Ledger Marketplace app's Shared Secret) in Netlify → Site configuration → Environment variables, then redeploy.</div>`
+    ? `<p>Sign-in isn't set up yet.</p><div class="box">Set <b>LEDGER_PASSWORD</b> (12–256 characters) for outside-GHL access, or <b>GHL_APP_SHARED_SECRET</b> (the Ledger Marketplace app's Shared Secret) in Netlify → Site configuration → Environment variables, then redeploy.</div>`
     : `<div id="ghl" hidden><p>Signing you in with your GHL login…</p><div class="spin"></div></div>
 <div id="denied" hidden></div>
 <form id="pinForm" autocomplete="on" hidden>
-  <p id="pinIntro">Outside GHL, sign in with your GHL login email and the Ledger PIN.</p>
+  <p id="pinIntro">Outside GHL, sign in with your GHL login email and the Ledger password.</p>
   <label for="email">GHL login email</label><input id="email" type="email" autocomplete="username" required>
-  <label for="pin">Ledger PIN</label><input id="pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="12" required>
+  <label for="pin">Ledger password</label><input id="pin" type="password" autocomplete="current-password" maxlength="256" required>
   <button type="submit" id="b">Sign in</button><div class="msg" id="m" role="alert"></div>
 </form>
 <div id="ghlOnly" hidden><p>Open the Ledger from inside GHL - it signs you in automatically there.</p></div>`}
@@ -101,7 +101,7 @@ ${o.notConfigured ? "" : `<script>
   function fallback(problem){
     $('ghl').hidden=true;
     if(problem){$('denied').hidden=false;$('denied').innerHTML='<div class="box">'+esc(problem)+'</div>'}
-    if(PIN){$('pinForm').hidden=false;if(problem)$('pinIntro').textContent='Or sign in with your GHL login email and the Ledger PIN.';$('email').focus()}
+    if(PIN){$('pinForm').hidden=false;if(problem)$('pinIntro').textContent='Or sign in with your GHL login email and the Ledger password.';$('email').focus()}
     else if(!problem){$('ghlOnly').hidden=false}
   }
   function askGhl(){

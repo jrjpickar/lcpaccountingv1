@@ -164,7 +164,7 @@ export default async (req: Request, context: any) => {
       }
       if (globalCounter.fails >= GLOBAL_LIMIT) {
         const mins = Math.ceil((globalCounter.since + GLOBAL_WINDOW_MS - Date.now()) / 60000);
-        throw new HttpError(429, `PIN sign-in is locked after too many wrong tries - try again in ${mins} minute${mins === 1 ? "" : "s"}, or open the Ledger inside GHL.`);
+        throw new HttpError(429, `Password sign-in is locked after too many wrong tries - try again in ${mins} minute${mins === 1 ? "" : "s"}, or open the Ledger inside GHL.`);
       }
 
       const email = String(body.email || "").trim().toLowerCase();
@@ -172,21 +172,21 @@ export default async (req: Request, context: any) => {
       const list = await loadAccess({ fresh: true });
       const entry: AccessEntry | null = email ? findEntry(list, { email }) : null;
       const senior = !!email && isSenior({ email });
-      const ok = /^\d{4,12}$/.test(given) && safeEqual(given, pin) && (!!entry || senior);
+      const ok = safeEqual(given, pin) && (!!entry || senior);
       if (!ok) {
         await Promise.all([
           store.setJSON(ipKey, { fails: ipCounter.fails + 1, since: ipCounter.since }),
           store.setJSON("fails/_global", { fails: globalCounter.fails + 1, since: globalCounter.since }),
         ]);
         const left = IP_LIMIT - (ipCounter.fails + 1);
-        throw new HttpError(401, `That email isn't on the access list, or the PIN is wrong - ${left > 0 ? `${left} tr${left === 1 ? "y" : "ies"} left` : "locked for 15 minutes"}.`);
+        throw new HttpError(401, `That email isn't on the access list, or the password is wrong - ${left > 0 ? `${left} tr${left === 1 ? "y" : "ies"} left` : "locked for 15 minutes"}.`);
       }
       if (ipCounter.fails) await store.delete(ipKey);
 
       const user = { id: entry?.id || `email:${email}`, name: entry?.name || email, email };
       const role = roleFor(list, user)!;
       const { token, maxAge } = await signSession(user, "pin");
-      await logActivity({ uid: user.id, name: user.name, via: "pin" }, "Signed in", "outside GHL with the PIN");
+      await logActivity({ uid: user.id, name: user.name, via: "pin" }, "Signed in", "outside GHL with a password");
       const p = { uid: user.id, name: user.name, email, via: "pin", role, effectiveRole: "user" };
       return withCookie({ ok: true, token, ...info(p) }, sessionCookie(token, maxAge));
     }

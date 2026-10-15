@@ -92,8 +92,11 @@ export function env(name: string): string {
   return String(v ?? "").trim();
 }
 
-// Optional outside-GHL PIN, 4-12 digits. Unset = sign-in only works inside GHL.
+// LEDGER_PASSWORD (12-256 characters) takes precedence over the legacy numeric PIN.
+// A configured but invalid password fails closed; no fallback to LEDGER_PIN.
 export function getPin(): string | null {
+  const password = env("LEDGER_PASSWORD");
+  if (password) return password.length >= 12 && password.length <= 256 ? password : null;
   const pin = env("LEDGER_PIN");
   return /^\d{4,12}$/.test(pin) ? pin : null;
 }

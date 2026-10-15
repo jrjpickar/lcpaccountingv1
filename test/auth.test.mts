@@ -7,6 +7,7 @@ import { createCipheriv, createHash, randomBytes } from "node:crypto";
 process.env.GHL_APP_SHARED_SECRET = "test-shared-secret";
 process.env.GHL_LOCATION_ID = "LOC123";
 process.env.LEDGER_PIN = "482193";
+delete process.env.LEDGER_PASSWORD;
 delete process.env.SENIOR_ADMINS;
 delete process.env.MAKE_CALLBACK_SECRET;
 
@@ -260,4 +261,22 @@ test("edge gate: sign-in page without a session, the app with one", async () => 
   assert.equal(await res.text(), "<html>APP</html>");
   res = await gate(new Request("https://ledger.test/", { headers: { cookie: `ledger_session=${encodeURIComponent(j)}` } }), { next });
   assert.equal(await res.text(), "<html>APP</html>");
+});
+
+ test("outside-GHL password accepts text, enforces access and invalidates on rotation", async () => {
+  process.env.LEDGER_PASSWORD = "a-long-test-password!";
+  try {
+    assert.equal(auth.getPin(), "a-long-test-password!");
+    const res = await post(session, "/api/session", { action: "pin", email: auth.OWNER_EMAIL, pin: process.env.LEDGER_PASSWORD });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.effectiveRole, "user");
+    assert.ok(await auth.verifyToken(body.token));
+    const denied = await post(session, "/api/session", { action: "pin", email: "unlisted@example.com", pin: process.env.LEDGER_PASSWORD });
+    assert.equal(denied.status, 401);
+    process.env.LEDGER_PASSWORD = "another-long-password!";
+    assert.equal(await auth.verifyToken(body.token), null);
+    process.env.LEDGER_PASSWORD = "short";
+    assert.equal(auth.getPin(), null);
+  } finally { delete process.env.LEDGER_PASSWORD; }
 });

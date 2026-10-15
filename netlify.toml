@@ -1,0 +1,74 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+# LEDGER_PIN (optional - sign-in outside GHL) is only a few digits, so Netlify's
+# secrets scanner can match it by chance inside unrelated dependency files and
+# fail the build. The PIN is only read at runtime, never written into the repo
+# or build output, so it's safe to exclude that one key from the scan.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "LEDGER_PIN"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Friendly URLs for the endpoints below, instead of /.netlify/functions/*
+[[redirects]]
+  from = "/api/deals"
+  to = "/.netlify/functions/deals"
+  status = 200
+
+[[redirects]]
+  from = "/api/bills"
+  to = "/.netlify/functions/bills"
+  status = 200
+
+[[redirects]]
+  from = "/api/vendors"
+  to = "/.netlify/functions/vendors"
+  status = 200
+
+[[redirects]]
+  from = "/api/customers"
+  to = "/.netlify/functions/customers"
+  status = 200
+
+[[redirects]]
+  from = "/api/recurring-bills"
+  to = "/.netlify/functions/recurring-bills"
+  status = 200
+
+[[redirects]]
+  from = "/api/partners"
+  to = "/.netlify/functions/partners"
+  status = 200
+
+[[redirects]]
+  from = "/api/report-config"
+  to = "/.netlify/functions/report-config"
+  status = 200
+
+[[redirects]]
+  from = "/api/ytd-baseline"
+  to = "/.netlify/functions/ytd-baseline"
+  status = 200
+
+# Manual/test trigger for the scheduled recurring-bills function - Netlify's
+# cron calls it every hour, but it only acts at 6am Pacific (DST-aware); this
+# path always runs, for a test run without waiting.
+[[redirects]]
+  from = "/api/run-recurring-bills"
+  to = "/.netlify/functions/run-recurring-bills"
+  status = 200
+
+# Sign-in (GHL Custom Page or email + PIN) and the Access tab - see
+# netlify/shared/auth.ts.
+[[redirects]]
+  from = "/api/session"
+  to = "/.netlify/functions/session"
+  status = 200
+
+[[redirects]]
+  from = "/api/access"
+  to = "/.netlify/functions/access"
+  status = 200

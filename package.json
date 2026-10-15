@@ -1,0 +1,13 @@
+{
+  "name": "ghl-ledger",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^11.0.3"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --no-warnings --import ./test/register.mjs --test test/*.test.mts"
+  },
+  "engines": {
+    "node": ">=22.6"
+  }
+}

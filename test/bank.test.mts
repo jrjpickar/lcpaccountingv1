@@ -53,3 +53,22 @@ test('CSV rules classify ACH capital, named transfers and escrow without countin
  assert.ok(rows.some(t=>t.category==='Transfer'&&t.type==='Spend'));
  assert.ok(rows.filter(t=>t.category==='Revenue').every(t=>t.needsReview));
 });
+
+test('recurring charges on new dates import; only same-date charges from a previous import are duplicates',async()=>{
+ const {token}=await signSession({id:'owner',email:OWNER_EMAIL,name:'Owner'},'pin');
+ const req=(body:any)=>new Request('https://test/api/bank-transactions',{method:'POST',headers:{'x-ledger-auth':token},body:JSON.stringify(body)});
+ const line=(d:string,bal:string,status='SETTLED')=>`${d},Acme Software,1111,Spend,Monthly plan,ref,${status},-49.99,USD,${bal}\r\n`;
+ const name='Relay #7510.csv';
+ let r=await (await handler(req({action:'import',files:[{name,text:header+line('08/01/2026','500.00')}]}))).json();assert.equal(r.added,1);
+ // same payee/amount, next months: recurring, not duplicates (and the August row is a dup)
+ r=await (await handler(req({action:'import',files:[{name,text:header+line('08/01/2026','500.00')+line('09/01/2026','450.01')+line('10/01/2026','400.02')}]}))).json();
+ assert.equal(r.added,2);assert.equal(r.duplicates,1);
+ // re-export of an already imported date with a different balance/status is still a duplicate
+ r=await (await handler(req({action:'import',files:[{name,text:header+line('09/01/2026','999.99','PENDING')}]}))).json();assert.equal(r.added,0);assert.equal(r.duplicates,1);
+ // two identical same-day charges in one file both count; re-importing adds nothing
+ const twice=header+line('11/01/2026','350.03')+line('11/01/2026','300.04');
+ r=await (await handler(req({action:'import',files:[{name,text:twice}]}))).json();assert.equal(r.added,2);
+ r=await (await handler(req({action:'import',files:[{name,text:twice}]}))).json();assert.equal(r.added,0);assert.equal(r.duplicates,2);
+ // same charge in two overlapping CSVs within one batch counts once
+ r=await (await handler(req({action:'import',files:[{name,text:header+line('12/01/2026','250.05')},{name:'Relay copy #7510.csv',text:header+line('12/01/2026','250.05')}]}))).json();assert.equal(r.added,1);assert.equal(r.duplicates,1);
+});

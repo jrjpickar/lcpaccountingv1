@@ -7,6 +7,8 @@
 # fail the build. The PIN is only read at runtime, never written into the repo
 # or build output, so it's safe to exclude that one key from the scan.
 [build.environment]
+  # Node.js 24 LTS (security support until April 2028). Matches .nvmrc.
+  NODE_VERSION = "24"
   SECRETS_SCAN_OMIT_KEYS = "LEDGER_PIN"
 
 [functions]
@@ -77,3 +79,11 @@
   from = "/api/bank-transactions"
   to = "/.netlify/functions/bank-transactions"
   status = 200
+
+# Baseline security headers (Nov 2026 audit). No frame restrictions on purpose: the
+# app is embedded in GHL as a Custom Page.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -880,6 +880,96 @@
   .deal-foot{display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid var(--line); font-size:11.5px; font-weight:600; color:var(--muted)}
   .deal-foot .ghl-contact-link{margin:0}
 
+  /* Bills: subscriptions, upcoming, owner contributions (from Relay imports) */
+  .bills-insights{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:16px; margin-bottom:16px}
+  .bills-insights .chart-card, #subs-card{margin:0}
+  #subs-card{margin-bottom:20px}
+  .ins-sub{font-size:12.5px; color:var(--muted); font-weight:600}
+  .up-row{display:grid; grid-template-columns:52px minmax(0,1fr) auto; gap:12px; align-items:center; padding:10px 0; border-top:1px solid var(--line)}
+  .up-row:first-of-type{border-top:0}
+  .up-date{text-align:center; line-height:1.1; border-radius:10px; padding:6px 0; background:var(--bg)}
+  .up-date b{display:block; font-size:17px; font-weight:800; color:var(--ink)}
+  .up-date span{font-size:10.5px; font-weight:800; color:var(--muted); text-transform:uppercase}
+  .up-date.late{background:var(--overdue-bg)} .up-date.late b, .up-date.late span{color:var(--overdue-ink)}
+  .up-date.soon{background:var(--sent-bg)} .up-date.soon b, .up-date.soon span{color:var(--sent-ink)}
+  .up-amt{text-align:right; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .up-amt small{display:block; font-size:11px; font-weight:600; color:var(--muted)}
+  .src-badge{font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:100px; margin-right:6px; background:var(--draft-bg); color:var(--draft-ink)}
+  .src-badge.bill{background:var(--blue-soft); color:var(--blue)}
+  .src-badge.sub{background:var(--paid-bg); color:var(--paid-ink)}
+  .src-badge.rec{background:var(--sent-bg); color:var(--sent-ink)}
+  .up-group{font-size:11.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); margin:14px 0 2px}
+  .split-bar{display:flex; height:12px; border-radius:6px; overflow:hidden; background:var(--bg); margin:6px 0 4px}
+  .split-bar i{display:block; height:100%}
+  .own-row{padding:12px 0; border-top:1px solid var(--line)}
+  .own-row:first-of-type{border-top:0}
+  .own-head{display:flex; justify-content:space-between; gap:10px; font-weight:800}
+  .mini-months{display:flex; align-items:flex-end; gap:3px; height:28px; margin-top:6px}
+  .mini-months i{flex:1; background:var(--series-rev); border-radius:2px 2px 0 0; min-height:2px; opacity:.85}
+  .ce-toggle{font:inherit; font-size:12.5px; font-weight:700; color:var(--blue); background:none; border:0; padding:6px 0 0; cursor:pointer}
+  .ce-list{margin-top:8px; border:1px solid var(--line); border-radius:10px; overflow:hidden}
+  .ce-row{padding:10px 12px; border-top:1px solid var(--line)}
+  .ce-row:first-child{border-top:0}
+  .ce-top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+  .ce-amt{font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .ce-btns{display:inline-flex; border:1px solid var(--line-strong); border-radius:9px; overflow:hidden; margin-top:8px}
+  .ce-btns button{font:inherit; font-size:12.5px; font-weight:700; padding:7px 12px; border:0; background:var(--surface); color:var(--muted); cursor:pointer; min-height:34px}
+  .ce-btns button + button{border-left:1px solid var(--line-strong)}
+  .ce-btns button.on.paid{background:var(--series-exp); color:#fff}
+  .ce-btns button.on.dep{background:var(--series-rev); color:#fff}
+  .ce-btns button:disabled{opacity:.6; cursor:default}
+  .ce-pick{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center}
+  .ce-pick select, .ce-pick input{font:inherit; font-size:13px; padding:7px 9px; border:1px solid var(--line-strong); border-radius:8px; background:var(--surface); color:var(--ink); min-width:0; max-width:100%}
+  .ce-src{white-space:nowrap; font-size:11px; font-weight:800; padding:2px 7px; border-radius:100px; background:var(--bg); color:var(--muted)}
+  .ce-src.manual{background:var(--sent-bg); color:var(--sent-ink)}
+  .ce-reset{font:inherit; font-size:12px; font-weight:700; color:var(--muted); background:none; border:0; text-decoration:underline; cursor:pointer; padding:0 4px}
+  .subs-table{width:100%; border-collapse:collapse; font-size:13.5px}
+  .subs-table th{text-align:left; font-size:11.5px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; padding:8px 8px; border-bottom:1px solid var(--line)}
+  .subs-table td{padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:middle}
+  .subs-table .num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .subs-table tr.stale td{opacity:.55}
+  .spark{display:inline-flex; align-items:flex-end; gap:2px; height:22px; vertical-align:middle}
+  .spark i{width:5px; background:var(--series-rev); border-radius:1px; min-height:2px}
+  @media (max-width:980px){ .bills-insights{grid-template-columns:minmax(0,1fr)} }
+  @media (max-width:760px){ .subs-table .hide-sm{display:none} }
+
+  /* Won deals: KPIs, close-month chart, list */
+  .deal-chips{display:flex; gap:6px; flex-wrap:wrap}
+  .deal-chip{font:inherit; font-size:13px; font-weight:700; padding:7px 13px; border-radius:100px; border:1px solid var(--line-strong); background:var(--surface); color:var(--muted); cursor:pointer}
+  .deal-chip.on{background:var(--blue-soft); color:var(--blue); border-color:var(--blue)}
+  .deal-chip .n{font-weight:600; opacity:.75; margin-left:4px}
+  .won-chart-card{margin-bottom:18px}
+  .won-chart{width:100%; height:auto; display:block}
+  .won-chart .bar{cursor:pointer}
+  .won-chart .bar:hover{opacity:.82}
+  .won-chart .bar.dim{opacity:.28}
+  .won-chart text{font-family:inherit}
+  .legend-dot{display:inline-block; width:9px; height:9px; border-radius:3px; margin:0 5px 0 12px; vertical-align:-1px}
+  .won-list{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden}
+  .won-month{display:flex; justify-content:space-between; padding:10px 18px; background:var(--bg); font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); border-top:1px solid var(--line)}
+  .won-month:first-child{border-top:0}
+  .won-row{display:grid; grid-template-columns:64px minmax(0,1.6fr) minmax(0,1fr) 110px 150px; gap:14px; align-items:center; padding:13px 18px; border-top:1px solid var(--line); cursor:pointer}
+  .won-row:hover{background:var(--blue-soft)}
+  .won-row:focus-visible{outline:2px solid var(--blue); outline-offset:-2px}
+  .won-date{text-align:center; line-height:1.1}
+  .won-date b{display:block; font-size:20px; font-weight:800; color:var(--ink)}
+  .won-date span{font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase}
+  .won-name{font-weight:700; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .won-sub{font-size:12.5px; color:var(--muted); font-weight:600; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .won-fee{text-align:right; font-weight:800; font-variant-numeric:tabular-nums; color:var(--ink)}
+  .won-fee small{display:block; font-size:11.5px; font-weight:600; color:var(--muted)}
+  .won-status{display:flex; flex-wrap:wrap; gap:5px; justify-content:flex-end}
+  .pl-badge{font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; margin-right:6px}
+  .pl-badge.acquisitions{background:var(--blue-soft); color:var(--blue)}
+  .pl-badge.retail{background:var(--paid-bg); color:var(--paid-ink)}
+  .pl-badge.other{background:var(--draft-bg); color:var(--draft-ink)}
+  .won-sub .ghl-contact-link{display:inline; margin:0; padding:0; font-weight:700}
+  .won-empty{padding:28px 18px; text-align:center; color:var(--muted); font-weight:600}
+  @media (max-width:760px){
+    .won-row{grid-template-columns:52px minmax(0,1fr) 100px}
+    .won-row .won-buyer, .won-row .won-status{display:none}
+  }
+
   /* Deal modal */
   .deal-modal-meta{font-size:13px; color:var(--muted); margin:-4px 0 6px}
   .deal-modal-meta a{color:var(--blue); font-weight:700}
@@ -978,30 +1068,39 @@
     <div class="aging-strip deals-strip" id="deals-summary"></div>
 
     <div class="controls">
+      <div class="deal-chips" id="deal-pipeline-chips"></div>
       <div class="search-pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="search" id="deal-search" placeholder="Search address, seller, buyer, escrow #" aria-label="Search deals">
       </div>
-      <div class="countpill" id="deals-countpill">- deals</div>
       <div class="toolbar-group">
         <div class="selectpill compact">
-          <select id="deal-sort" class="pill-select" aria-label="Sort deals">
-            <option value="close">Sort: expected close</option>
-            <option value="fee">Sort: biggest fee</option>
-            <option value="stage-age">Sort: longest in stage</option>
+          <select id="deal-period" class="pill-select" aria-label="Period">
+            <option value="year">This year</option>
+            <option value="12m">Last 12 months</option>
+            <option value="all">All time</option>
           </select>
         </div>
-        <button class="filterbtn" id="fell-out-btn" type="button" hidden title="Deals that have saved numbers but have since moved to Offer Declined, Ghosted, etc. - so EMD on a cancelled contract stays visible">
+        <div class="selectpill compact">
+          <select id="deal-sort" class="pill-select" aria-label="Sort deals">
+            <option value="close">Sort: newest close</option>
+            <option value="fee">Sort: biggest fee</option>
+            <option value="todo">Sort: fee not in first</option>
+          </select>
+        </div>
+        <button class="filterbtn" id="fell-out-btn" type="button" hidden title="Deals with saved numbers that are no longer won in GHL, so EMD on a cancelled contract stays visible">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
-          <span id="fell-out-label">Show fell out</span>
+          <span id="fell-out-label">Show no longer won</span>
         </button>
       </div>
-      <span class="source-pill" id="deals-source">GHL pipeline</span>
+      <div class="countpill" id="deals-countpill">- deals</div>
+      <span class="source-pill" id="deals-source">GHL</span>
     </div>
 
-    <div class="board" id="deals-board"></div>
+    <div class="chart-card won-chart-card" id="deals-chart"></div>
+    <div class="won-list" id="deals-board"></div>
 
-    <p class="demo-note"><span class="pip" id="deals-pip"></span> <span id="deals-note-text">Loading deals from GHL…</span></p>
+    <p class="demo-note"><span class="pip" id="deals-pip"></span> <span id="deals-note-text">Loading won deals from GHL…</span></p>
   </section>
 
   <section class="view" id="view-bills">
@@ -1013,6 +1112,13 @@
       <div class="aging-tile"><div class="label">61-90 days</div><div class="value" id="aging-90">$0.00</div></div>
       <div class="aging-tile warn"><div class="label">90+ days</div><div class="value" id="aging-90plus">$0.00</div></div>
     </div>
+
+    <div class="aging-strip deals-strip" id="subs-kpis"></div>
+    <div class="bills-insights">
+      <div class="chart-card" id="upcoming-card"><div class="chart-empty">Loading upcoming bills…</div></div>
+      <div class="chart-card" id="contrib-card"><div class="chart-empty">Loading owner contributions…</div></div>
+    </div>
+    <div class="chart-card" id="subs-card"><div class="chart-empty">Loading subscriptions from Relay…</div></div>
 
     <div class="controls">
       <div class="selectpill">
@@ -1237,7 +1343,10 @@
   var dealsError = null;     // string when the last load failed
   var dealSearch = '';
   var showFellOut = false;
-  var dealSort = 'close';    // 'close' | 'fee' | 'stage-age'
+  var dealSort = 'close';    // 'close' | 'fee' | 'todo'
+  var dealPipeline = 'all';  // 'all' | 'acquisitions' | 'retail' | pipeline id
+  var dealPeriod = 'year';   // 'year' | '12m' | 'all'
+  var dealMonth = '';        // 'YYYY-MM' when a chart bar is picked
 
   function money(n){
     var v = Number(n);
@@ -1293,6 +1402,26 @@
     var d = localDate(row.lastStageChangeAt);
     return d ? Math.max(0, daysBetween(d, todayLocal())) : null;
   }
+  // GHL's close date for a won deal (YYYY-MM-DD, LA time).
+  function closeDateOf(row){ return row.closedDate || localDate(row.closedAt) || ''; }
+  var PIPELINE_LABEL = { acquisitions: 'Acquisitions', retail: 'Retail', other: 'Other' };
+  function pipelineLabel(row){ return PIPELINE_LABEL[row.pipelineKind] || row.pipelineName || 'Pipeline'; }
+  function inDealPeriod(row){
+    var d = closeDateOf(row), today = todayLocal();
+    if (dealPeriod === 'all') return true;
+    if (!d) return false;
+    if (dealPeriod === 'year') return d.slice(0, 4) === today.slice(0, 4);
+    var from = new Date(Date.parse(today + 'T00:00:00Z') - 365 * 86400000).toISOString().slice(0, 10);
+    return d >= from;
+  }
+  function inDealPipeline(row){
+    if (dealPipeline === 'all') return true;
+    return row.pipelineKind === dealPipeline || row.pipelineId === dealPipeline;
+  }
+  // Won deals after the pipeline + period + search filters (not the month pick).
+  function filteredWonDeals(){
+    return dealsData ? dealsData.deals.filter(function(d){ return inDealPipeline(d) && inDealPeriod(d) && matchesDealSearch(d); }) : [];
+  }
 
   function matchesDealSearch(row){
     if (!dealSearch) return true;
@@ -1303,134 +1432,179 @@
 
   function sortDeals(rows){
     var copy = rows.slice();
-    if (dealSort === 'fee') copy.sort(function(a, b){ return dealFee(b) - dealFee(a); });
-    else if (dealSort === 'stage-age') copy.sort(function(a, b){ return (stageAgeDays(b) || 0) - (stageAgeDays(a) || 0); });
-    else copy.sort(function(a, b){
-      var ca = (a.record && a.record.expectedCloseDate) || '9999', cb = (b.record && b.record.expectedCloseDate) || '9999';
-      return ca < cb ? -1 : ca > cb ? 1 : 0;
-    });
+    var byClose = function(a, b){ return closeDateOf(b).localeCompare(closeDateOf(a)); };
+    if (dealSort === 'fee') copy.sort(function(a, b){ return dealFee(b) - dealFee(a) || byClose(a, b); });
+    else if (dealSort === 'todo') copy.sort(function(a, b){ return (feeIsReceived(a) ? 1 : 0) - (feeIsReceived(b) ? 1 : 0) || byClose(a, b); });
+    else copy.sort(byClose);
     return copy;
   }
 
+
   var EMD_LABEL = { none: 'No EMD', held: 'EMD held', refunded: 'EMD refunded', forfeited: 'EMD forfeited' };
 
-  function dealCardHTML(row, opts){
-    opts = opts || {};
-    var r = row.record || {};
-    var today = todayLocal();
-    var fee = dealFee(row);
-    var badges = [];
-    if (feeIsReceived(row)) badges.push('<span class="deal-badge good">Fee received ' + esc(niceDate(r.feeReceivedDate)) + '</span>');
-    else if (!opts.showStage && (!row.record || (r.assignmentFee == null && !row.monetaryValue))) badges.push('<span class="deal-badge muted">Needs numbers</span>');
-    if (r.emdStatus === 'held' && r.emdAmount) badges.push('<span class="deal-badge warn">EMD ' + money0(r.emdAmount) + ' at risk</span>');
-    if (r.emdStatus === 'forfeited' && r.emdAmount) badges.push('<span class="deal-badge bad">EMD ' + money0(r.emdAmount) + ' lost</span>');
-    if (r.emdStatus === 'refunded' && r.emdAmount) badges.push('<span class="deal-badge">EMD refunded</span>');
+  var MON3 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    var closeTxt = '';
-    var inClosedStage = !!(dealsData && dealsData.stages.some(function(s){ return s.id === row.stageId && s.isClosed; }));
-    if (inClosedStage && !feeIsReceived(row)) badges.unshift('<span class="deal-badge warn">Record the fee</span>');
-    if (r.expectedCloseDate) {
-      var dd = daysBetween(today, r.expectedCloseDate);
-      var settled = feeIsReceived(row) || inClosedStage;
-      var cls = settled ? '' : dd < 0 ? ' late' : dd <= 7 ? ' soon' : '';
-      closeTxt = '<span class="v' + cls + '">' + esc(niceDate(r.expectedCloseDate)) +
-        (settled ? '' : ' <em>' + (dd === 0 ? 'today' : dd > 0 ? 'in ' + dd + 'd' : Math.abs(dd) + 'd late') + '</em>') + '</span>';
-    }
-    var age = stageAgeDays(row);
-    var contactUrl = ghlContactUrl(row);
-    return (
-      '<div class="card deal-card" data-deal-id="' + esc(row.id) + '" tabindex="0" role="button" aria-label="Open deal ' + esc(row.name) + '">' +
-        '<div class="card-top"><div class="title">' + esc(row.name) +
-          (row.contactName ? '<span class="sub">' + esc(row.contactName) + '</span>' : '') + '</div>' +
-          '<div class="avatar">' + esc(initials(row.contactName || row.name)) + '</div></div>' +
-        (opts.showStage ? '<div class="kv"><span class="k">Now in</span><span class="v">' + esc(row.stageName) + '</span></div>' : '') +
-        '<div class="kv"><span class="k">' + (feeIsReceived(row) ? 'Fee in' : 'Fee') + '</span><span class="v amount">' + (fee ? money0(fee) : '<span class="dash">-</span>') + '</span></div>' +
-        (r.contractPrice != null ? '<div class="kv"><span class="k">Contract</span><span class="v">' + money0(r.contractPrice) + '</span></div>' : '') +
-        (r.buyerName ? '<div class="kv"><span class="k">Buyer</span><span class="v">' + esc(r.buyerName) + '</span></div>' : '') +
-        (closeTxt ? '<div class="kv"><span class="k">Close</span>' + closeTxt + '</div>' : '') +
-        (badges.length ? '<div class="deal-badges">' + badges.join('') + '</div>' : '') +
-        '<div class="deal-foot">' +
-          '<span>' + (age != null ? age + ' day' + (age === 1 ? '' : 's') + ' in stage' : '') + '</span>' +
-          (contactUrl ? '<a class="ghl-contact-link" href="' + esc(contactUrl) + '" target="_blank" rel="noopener" data-stop="1">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>GHL</a>' : '') +
-        '</div>' +
-      '</div>'
-    );
+  function dealBadges(row){
+    var r = row.record || {}, b = [];
+    if (feeIsReceived(row)) b.push('<span class="deal-badge good">Fee in ' + esc(niceDate(r.feeReceivedDate)) + '</span>');
+    else if (!row.record || (r.assignmentFee == null && !row.monetaryValue)) b.push('<span class="deal-badge muted">Needs numbers</span>');
+    else b.push('<span class="deal-badge warn">Record the fee</span>');
+    if (r.emdStatus === 'held' && r.emdAmount) b.push('<span class="deal-badge warn">EMD ' + money0(r.emdAmount) + ' held</span>');
+    if (r.emdStatus === 'forfeited' && r.emdAmount) b.push('<span class="deal-badge bad">EMD ' + money0(r.emdAmount) + ' lost</span>');
+    return b.join('');
   }
 
-  function dealStageColumns(){
-    return dealsData ? dealsData.stages.filter(function(s){ return s.isDeal; }) : [];
+  function dealRowHTML(row, opts){
+    opts = opts || {};
+    var r = row.record || {};
+    var d = closeDateOf(row);
+    var fee = dealFee(row);
+    var contactUrl = ghlContactUrl(row);
+    var buyer = r.buyerName || '';
+    return '<div class="won-row" data-deal-id="' + esc(row.id) + '" tabindex="0" role="button" aria-label="Open deal ' + esc(row.name) + '">' +
+      '<div class="won-date">' + (d ? '<b>' + Number(d.slice(8, 10)) + '</b><span>' + MON3[Number(d.slice(5, 7)) - 1] + '</span>' : '<span>' + esc(opts.fell ? row.stageName : 'No date') + '</span>') + '</div>' +
+      '<div style="min-width:0"><div class="won-name">' + esc(row.name) + '</div>' +
+        '<div class="won-sub">' + (opts.fell ? '' : '<span class="pl-badge ' + esc(row.pipelineKind || 'other') + '">' + esc(pipelineLabel(row)) + '</span>') +
+        esc(row.contactName || 'No seller in GHL') +
+        (contactUrl ? ' · <a class="ghl-contact-link" href="' + esc(contactUrl) + '" target="_blank" rel="noopener" data-stop="1">GHL</a>' : '') + '</div></div>' +
+      '<div class="won-buyer" style="min-width:0"><div class="won-sub" style="margin:0">Buyer</div><div class="won-name" style="font-weight:600">' + (buyer ? esc(buyer) : '<span class="dash" style="color:var(--muted)">-</span>') + '</div></div>' +
+      '<div class="won-fee">' + (fee ? money0(fee) : '<span style="color:var(--muted)">-</span>') + '<small>' + (feeIsReceived(row) ? 'received' : r.assignmentFee != null ? 'expected' : fee ? 'GHL value' : 'no fee yet') + '</small></div>' +
+      '<div class="won-status">' + dealBadges(row) + '</div>' +
+    '</div>';
+  }
+
+  function renderDealChips(){
+    var el = document.getElementById('deal-pipeline-chips');
+    if (!el) return;
+    var base = dealsData ? dealsData.deals.filter(function(d){ return inDealPeriod(d) && matchesDealSearch(d); }) : [];
+    var kinds = [['all', 'All won']];
+    (dealsData && dealsData.pipelines || []).forEach(function(p){
+      var key = p.kind !== 'other' ? p.kind : p.id;
+      if (!kinds.some(function(k){ return k[0] === key; })) kinds.push([key, p.kind !== 'other' ? PIPELINE_LABEL[p.kind] : p.name]);
+    });
+    el.innerHTML = kinds.map(function(k){
+      var n = k[0] === 'all' ? base.length : base.filter(function(d){ return d.pipelineKind === k[0] || d.pipelineId === k[0]; }).length;
+      return '<button type="button" class="deal-chip' + (dealPipeline === k[0] ? ' on' : '') + '" data-pipeline="' + esc(k[0]) + '">' + esc(k[1]) + '<span class="n">' + n + '</span></button>';
+    }).join('');
   }
 
   function renderDealsSummary(){
     var el = document.getElementById('deals-summary');
     if (!el) return;
-    var rows = dealsData ? dealsData.deals : [];
-    var all = rows.concat(dealsData ? dealsData.fellOut : []);
-    var today = todayLocal(), year = today.slice(0, 4);
-    var pending = 0, pendingN = 0, emd = 0, emdN = 0, collected = 0, collectedN = 0, soonN = 0, soonFee = 0;
+    var rows = filteredWonDeals();
+    var got = 0, gotN = 0, todo = 0, todoN = 0, total = 0, feeN = 0, emd = 0, emdN = 0;
     rows.forEach(function(row){
-      var r = row.record || {};
-      if (!feeIsReceived(row)) {
-        var f = dealFee(row);
-        if (f) { pending += f; pendingN++; }
-        if (r.expectedCloseDate) { var d = daysBetween(today, r.expectedCloseDate); if (d >= 0 && d <= 14) { soonN++; soonFee += f; } }
-      }
+      var f = dealFee(row);
+      if (f) { total += f; feeN++; }
+      if (feeIsReceived(row)) { got += Number(row.record.feeReceived) || 0; gotN++; }
+      else { todo += f; todoN++; }
     });
-    all.forEach(function(row){
+    rows.concat(dealsData ? dealsData.fellOut || [] : []).forEach(function(row){
       var r = row.record || {};
       if (r.emdStatus === 'held' && r.emdAmount) { emd += Number(r.emdAmount); emdN++; }
-      if (feeIsReceived(row) && String(r.feeReceivedDate || '').slice(0, 4) === year) { collected += Number(r.feeReceived); collectedN++; }
     });
+    var acq = rows.filter(function(d){ return d.pipelineKind === 'acquisitions'; }).length;
+    var ret = rows.filter(function(d){ return d.pipelineKind === 'retail'; }).length;
     function tile(label, value, sub, tone){
       return '<div class="aging-tile' + (tone ? ' ' + tone : '') + '"><div class="label">' + label + '</div><div class="value">' + value + '</div><div class="tile-sub">' + sub + '</div></div>';
     }
     el.innerHTML =
-      tile('In deal stages', String(rows.length), rows.length === 1 ? 'deal' : 'deals') +
-      tile('Fees pending', money0(pending), pendingN + ' deal' + (pendingN === 1 ? '' : 's') + ' not paid yet') +
-      tile('Closing in 14 days', money0(soonFee), soonN + ' deal' + (soonN === 1 ? '' : 's')) +
-      tile('EMD at risk', money0(emd), emdN ? emdN + ' deposit' + (emdN === 1 ? '' : 's') + ' held' : 'none held', emd ? 'warn' : '') +
-      tile('Fees collected ' + year, money0(collected), collectedN + ' closed deal' + (collectedN === 1 ? '' : 's'), collected ? 'good' : '');
+      tile('Deals won', String(rows.length), acq + ' acq · ' + ret + ' retail') +
+      tile('Fees collected', money0(got), gotN + ' paid', got ? 'good' : '') +
+      tile('Fees to record', money0(todo), todoN ? todoN + ' won deal' + (todoN === 1 ? '' : 's') + ' not paid yet' : 'all caught up', todoN ? 'warn' : '') +
+      tile('Avg fee', feeN ? money0(total / feeN) : '$0', 'per won deal') +
+      tile('EMD at risk', money0(emd), emdN ? emdN + ' deposit' + (emdN === 1 ? '' : 's') + ' held' : 'none held', emd ? 'warn' : '');
+  }
+
+  // Stacked bars of fees by GHL close month, one series per pipeline kind.
+  function renderDealsChart(){
+    var el = document.getElementById('deals-chart');
+    if (!el) return;
+    if (!dealsData) { el.innerHTML = '<div class="chart-empty">' + esc(dealsError ? 'Couldn\'t load deals: ' + dealsError : 'Loading from GHL…') + '</div>'; return; }
+    var rows = filteredWonDeals().filter(function(d){ return closeDateOf(d); });
+    var today = todayLocal(), months = [];
+    var last = today.slice(0, 7), first;
+    if (dealPeriod === 'year') first = today.slice(0, 4) + '-01';
+    else if (dealPeriod === '12m') { var y = +last.slice(0, 4), m = +last.slice(5, 7) - 11; if (m < 1) { m += 12; y--; } first = y + '-' + String(m).padStart(2, '0'); }
+    else first = rows.reduce(function(a, d){ var k = closeDateOf(d).slice(0, 7); return k < a ? k : a; }, last);
+    for (var k = first, guard = 0; k <= last && guard < 120; guard++) {
+      months.push(k);
+      var yy = +k.slice(0, 4), mm = +k.slice(5, 7) + 1; if (mm > 12) { mm = 1; yy++; } k = yy + '-' + String(mm).padStart(2, '0');
+    }
+    var series = [['acquisitions', 'var(--series-rev)', 'Acquisitions'], ['retail', 'var(--paid-ink)', 'Retail'], ['other', 'var(--series-exp)', 'Other']];
+    var data = months.map(function(mk){
+      var v = { acquisitions: 0, retail: 0, other: 0, n: 0 };
+      rows.forEach(function(d){ if (closeDateOf(d).slice(0, 7) === mk) { v[series.some(function(s){ return s[0] === d.pipelineKind; }) ? d.pipelineKind : 'other'] += dealFee(d); v.n++; } });
+      return v;
+    });
+    var used = series.filter(function(s){ return data.some(function(v){ return v[s[0]]; }); });
+    var peak = Math.max.apply(null, data.map(function(v){ return v.acquisitions + v.retail + v.other; }).concat([1]));
+    var W = 760, H = 200, top = 22, base = 170, n = months.length || 1, slot = W / n, bw = Math.min(46, slot * 0.62);
+    var svg = '<svg class="won-chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Fees by GHL close month">';
+    [0.5, 1].forEach(function(f){ var yv = base - (base - top) * f; svg += '<line x1="0" x2="' + W + '" y1="' + yv + '" y2="' + yv + '" stroke="var(--line)" stroke-dasharray="3 4"/>'; });
+    data.forEach(function(v, i){
+      var x = i * slot + (slot - bw) / 2, y = base, mk = months[i], tot = v.acquisitions + v.retail + v.other;
+      var dim = dealMonth && dealMonth !== mk ? ' dim' : '';
+      series.forEach(function(s){
+        var h = v[s[0]] / peak * (base - top); if (!h) return;
+        y -= h;
+        svg += '<rect class="bar' + dim + '" data-month="' + mk + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3" fill="' + s[1] + '"><title>' + MON3[+mk.slice(5, 7) - 1] + ' ' + mk.slice(0, 4) + ' · ' + s[2] + ' ' + money0(v[s[0]]) + '</title></rect>';
+      });
+      if (!tot) svg += '<rect class="bar' + dim + '" data-month="' + mk + '" x="' + x.toFixed(1) + '" y="' + (base - 2) + '" width="' + bw.toFixed(1) + '" height="2" rx="1" fill="var(--line-strong)"/>';
+      if (tot) svg += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (y - 6).toFixed(1) + '" text-anchor="middle" font-size="11" font-weight="700" fill="var(--muted)">' + (tot >= 1000 ? '$' + Math.round(tot / 1000) + 'K' : money0(tot)) + '</text>';
+      if (n <= 14 || i % 2 === 0) svg += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (base + 18) + '" text-anchor="middle" font-size="11" font-weight="600" fill="var(--muted)">' + MON3[+mk.slice(5, 7) - 1] + (mk.slice(5, 7) === '01' || i === 0 ? " '" + mk.slice(2, 4) : '') + '</text>';
+    });
+    svg += '</svg>';
+    var total = rows.reduce(function(s, d){ return s + dealFee(d); }, 0);
+    el.innerHTML = '<div class="chart-head"><div><h3 class="report-h">Fees by close month</h3><div class="chart-sub">Close date from GHL · received fee if paid, else expected' +
+        (dealMonth ? ' · <a href="#" id="deal-month-clear">Showing ' + MON3[+dealMonth.slice(5, 7) - 1] + ' ' + dealMonth.slice(0, 4) + ' only, clear</a>' : ' · click a bar to filter') + '</div></div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--muted)">' + used.map(function(s){ return '<span class="legend-dot" style="background:' + s[1] + '"></span>' + s[2]; }).join('') + '</div></div>' +
+      '<div class="chart-headline">' + money0(total) + '<span style="font-size:13px;font-weight:600;color:var(--muted);margin-left:8px">' + rows.length + ' won deal' + (rows.length === 1 ? '' : 's') + '</span></div>' + svg;
   }
 
   function renderDealsBoard(){
     var boardEl = document.getElementById('deals-board');
     var pill = document.getElementById('deals-countpill');
     var fellBtn = document.getElementById('fell-out-btn');
+    renderDealChips();
     renderDealsSummary();
+    renderDealsChart();
     if (!boardEl) return;
     if (!dealsData) {
-      boardEl.innerHTML = '<div class="col"><div class="col-head"><div><div class="t">' + (dealsError ? 'Couldn\'t load deals' : 'Loading from GHL…') + '</div></div></div>' +
-        (dealsError ? '<div class="cards"><div class="empty-state">' + esc(dealsError) + '</div></div>' : '') + '</div>';
+      boardEl.innerHTML = '<div class="won-empty">' + esc(dealsError ? 'Couldn\'t load deals: ' + dealsError : 'Loading won deals from GHL…') + '</div>';
       if (pill) pill.textContent = '- deals';
       return;
     }
-    var cols = dealStageColumns();
-    var visibleCount = 0;
-    var html = cols.map(function(stage){
-      var rows = sortDeals(dealsData.deals.filter(function(d){ return d.stageId === stage.id && matchesDealSearch(d); }));
-      visibleCount += rows.length;
-      var total = rows.reduce(function(s, d){ return s + dealFee(d); }, 0);
-      return '<div class="col deal-col' + (stage.isClosed ? ' closed' : '') + '">' +
-        '<div class="col-head"><div><div class="t">' + esc(stage.name) + '</div><div class="n">' + rows.length + ' deal' + (rows.length === 1 ? '' : 's') + ' · ' + money0(total) + '</div></div></div>' +
-        '<div class="cards">' + (rows.length ? rows.map(function(r){ return dealCardHTML(r); }).join('') : '<div class="empty-state">' + (dealSearch ? 'No matches' : 'Nothing in ' + esc(stage.name)) + '</div>') + '</div>' +
-      '</div>';
-    }).join('');
+    var rows = sortDeals(filteredWonDeals().filter(function(d){ return !dealMonth || closeDateOf(d).slice(0, 7) === dealMonth; }));
+    var html = '';
+    if (dealSort === 'close') {
+      var cur = null;
+      rows.forEach(function(r){
+        var mk = closeDateOf(r).slice(0, 7) || 'none';
+        if (mk !== cur) {
+          cur = mk;
+          var inMonth = rows.filter(function(x){ return (closeDateOf(x).slice(0, 7) || 'none') === mk; });
+          var sum = inMonth.reduce(function(s, x){ return s + dealFee(x); }, 0);
+          html += '<div class="won-month"><span>' + (mk === 'none' ? 'No close date' : MON3[+mk.slice(5, 7) - 1] + ' ' + mk.slice(0, 4)) + '</span><span>' + inMonth.length + ' · ' + money0(sum) + '</span></div>';
+        }
+        html += dealRowHTML(r);
+      });
+    } else html = rows.map(function(r){ return dealRowHTML(r); }).join('');
+    if (!rows.length) html = '<div class="won-empty">' + (dealsData.deals.length ? 'No won deals match these filters.' : 'No won deals in the Acquisitions or Retail pipelines yet. Mark an opportunity Won in GHL, then Refresh.') + '</div>';
+
     var fell = sortDeals((dealsData.fellOut || []).filter(matchesDealSearch));
     if (fellBtn) {
       fellBtn.hidden = !(dealsData.fellOut || []).length;
       fellBtn.classList.toggle('active-filter', showFellOut);
       var lbl = document.getElementById('fell-out-label');
-      if (lbl) lbl.textContent = (showFellOut ? 'Hide' : 'Show') + ' fell out (' + (dealsData.fellOut || []).length + ')';
+      if (lbl) lbl.textContent = (showFellOut ? 'Hide' : 'Show') + ' no longer won (' + (dealsData.fellOut || []).length + ')';
     }
     if (showFellOut && fell.length) {
-      html += '<div class="col deal-col fell">' +
-        '<div class="col-head"><div><div class="t">Fell out</div><div class="n">' + fell.length + ' with a deal record</div></div></div>' +
-        '<div class="cards">' + fell.map(function(r){ return dealCardHTML(r, { showStage: true }); }).join('') + '</div></div>';
+      html += '<div class="won-month" style="color:var(--overdue-ink)"><span>No longer won in GHL</span><span>' + fell.length + ' with a deal record</span></div>' +
+        fell.map(function(r){ return dealRowHTML(r, { fell: true }); }).join('');
     }
-    if (!cols.length) html = '<div class="empty-row">The pipeline was found but none of its stages are marked as deal stages - check DEAL_STAGES in Netlify.</div>';
     boardEl.innerHTML = html;
-    if (pill) pill.textContent = visibleCount + ' deal' + (visibleCount === 1 ? '' : 's');
+    if (pill) pill.textContent = rows.length + ' deal' + (rows.length === 1 ? '' : 's');
   }
 
   function loadDeals(){
@@ -1451,9 +1625,9 @@
       dealsData = data;
       dealsError = null;
       var src = document.getElementById('deals-source');
-      if (src) src.textContent = data.pipeline.name + ' pipeline · live';
-      if (dealsNoteEl) dealsNoteEl.textContent = 'Stages come live from GHL - move a deal there, then Refresh. Click a card to enter the fee, EMD, buyer and escrow.' +
-        (data.truncated ? ' Heads up: the pipeline has more than 2,000 opportunities, so some may be missing.' : '');
+      if (src) src.textContent = (data.pipelines || []).map(function(p){ return p.name; }).join(' + ') + ' · won · live';
+      if (dealsNoteEl) dealsNoteEl.textContent = 'Won deals come live from GHL, dated by the GHL close date. Mark an opportunity Won there, then Refresh. Click a deal to enter the fee, EMD, buyer and escrow.' +
+        (data.truncated ? ' Heads up: a pipeline has more than 2,000 won opportunities, so some may be missing.' : '');
     }).catch(function(err){
       dealsError = err.message;
       if (dealsNoteEl) dealsNoteEl.textContent = 'Couldn\'t load /api/deals: ' + err.message;
@@ -1491,8 +1665,8 @@
     var feeHint = (r.assignmentFee == null && row.monetaryValue) ? ' placeholder="' + esc(String(row.monetaryValue)) + ' (GHL value)"' : ' placeholder="0"';
     openModal(
       '<h3>' + esc(row.name) + '</h3>' +
-      '<div class="deal-modal-meta">' + esc(row.contactName || 'No seller name in GHL') + ' · <b>' + esc(row.stageName) + '</b>' +
-        (stageAgeDays(row) != null ? ' for ' + stageAgeDays(row) + ' day' + (stageAgeDays(row) === 1 ? '' : 's') : '') +
+      '<div class="deal-modal-meta">' + esc(row.contactName || 'No seller name in GHL') + ' · ' +
+        (closeDateOf(row) ? '<b>Won ' + esc(niceDate(closeDateOf(row))) + '</b> in ' + esc(row.pipelineName || pipelineLabel(row)) : '<b>' + esc(row.stageName) + '</b>') +
         (contactUrl ? ' · <a href="' + esc(contactUrl) + '" target="_blank" rel="noopener">Open in GHL</a>' : '') + '</div>' +
 
       '<div class="deal-section">The deal</div>' +
@@ -1612,14 +1786,14 @@
   if (dealsBoardEl) {
     dealsBoardEl.addEventListener('click', function(e){
       if (e.target.closest('[data-stop]')) return;
-      var card = e.target.closest('.deal-card');
+      var card = e.target.closest('.won-row');
       if (!card) return;
       var row = findDeal(card.getAttribute('data-deal-id'));
       if (row) openDealModal(row);
     });
     dealsBoardEl.addEventListener('keydown', function(e){
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      var card = e.target.closest('.deal-card');
+      var card = e.target.closest('.won-row');
       if (!card) return;
       e.preventDefault();
       var row = findDeal(card.getAttribute('data-deal-id'));
@@ -1632,6 +1806,19 @@
   if (dealSortEl) dealSortEl.addEventListener('change', function(){ dealSort = dealSortEl.value; renderDealsBoard(); });
   var fellOutBtn = document.getElementById('fell-out-btn');
   if (fellOutBtn) fellOutBtn.addEventListener('click', function(){ showFellOut = !showFellOut; renderDealsBoard(); });
+  var dealPeriodEl = document.getElementById('deal-period');
+  if (dealPeriodEl) dealPeriodEl.addEventListener('change', function(){ dealPeriod = dealPeriodEl.value; dealMonth = ''; renderDealsBoard(); });
+  var dealChipsEl = document.getElementById('deal-pipeline-chips');
+  if (dealChipsEl) dealChipsEl.addEventListener('click', function(e){
+    var b = e.target.closest('[data-pipeline]'); if (!b) return;
+    dealPipeline = b.getAttribute('data-pipeline'); renderDealsBoard();
+  });
+  var dealChartEl = document.getElementById('deals-chart');
+  if (dealChartEl) dealChartEl.addEventListener('click', function(e){
+    if (e.target.closest('#deal-month-clear')) { e.preventDefault(); dealMonth = ''; renderDealsBoard(); return; }
+    var bar = e.target.closest('[data-month]'); if (!bar) return;
+    var m = bar.getAttribute('data-month'); dealMonth = dealMonth === m ? '' : m; renderDealsBoard();
+  });
 
   /* ---------- Toast + modal helpers ---------- */
   var toastEl = document.getElementById('toast');
@@ -1701,7 +1888,8 @@
   var billsNoteEl = document.getElementById('bills-note-text');
   var billsCountPillEl = document.getElementById('bills-countpill');
 
-  function todayISO(){ return new Date().toISOString().slice(0, 10); }
+  // Pacific date, like the rest of the Ledger (UTC rolled the day over at 4-5pm).
+  function todayISO(){ return todayLocal(); }
 
   // Mirrors daysFromTerms()/addDays() in netlify/functions/lib/shared.mts -
   // used client-side only by the New Invoice worksheet to default (and
@@ -1915,6 +2103,7 @@
     renderBillsCountPill();
     renderAgingStrip();
     renderReportsDashboard();
+    if (typeof renderBillInsights === 'function') renderBillInsights();
   }
 
   function replaceBillInState(updated){
@@ -2796,14 +2985,14 @@
   if (exportBtn) exportBtn.addEventListener('click', function(){
     if (currentView === 'deals'){
       var rows = [];
-      var all = dealsData ? dealsData.deals.concat(showFellOut ? (dealsData.fellOut || []) : []) : [];
-      all.filter(matchesDealSearch).forEach(function(d){
+      var all = filteredWonDeals().concat(showFellOut && dealsData ? (dealsData.fellOut || []).filter(matchesDealSearch) : []);
+      all.forEach(function(d){
         var r = d.record || {};
-        rows.push([d.name, d.contactName || '', d.stageName, r.contractPrice == null ? '' : r.contractPrice, r.assignmentFee == null ? '' : r.assignmentFee,
+        rows.push([d.name, d.contactName || '', d.pipelineName || d.stageName, closeDateOf(d), r.contractPrice == null ? '' : r.contractPrice, r.assignmentFee == null ? '' : r.assignmentFee,
           r.emdAmount == null ? '' : r.emdAmount, r.emdStatus || '', r.buyerName || '', r.escrowCompany || '', r.escrowNumber || '',
           r.contractDate || '', r.expectedCloseDate || '', r.feeReceived == null ? '' : r.feeReceived, r.feeReceivedDate || '', r.closingCosts == null ? '' : r.closingCosts]);
       });
-      downloadCSV('deals-' + todayLocal() + '.csv', ['Property', 'Seller', 'Stage', 'Contract price', 'Assignment fee', 'EMD', 'EMD status', 'Buyer', 'Escrow company', 'Escrow #', 'Contract date', 'Expected close', 'Fee received', 'Received on', 'Our closing costs'], rows);
+      downloadCSV('deals-' + todayLocal() + '.csv', ['Property', 'Seller', 'Pipeline', 'GHL close date', 'Contract price', 'Assignment fee', 'EMD', 'EMD status', 'Buyer', 'Escrow company', 'Escrow #', 'Contract date', 'Expected close', 'Fee received', 'Received on', 'Our closing costs'], rows);
       showToast('Exported ' + rows.length + ' deal' + (rows.length === 1 ? '' : 's') + '.');
     } else if (currentView === 'bills'){
       var brows = bills.filter(matchesBillFilters).map(function(b){
@@ -3220,9 +3409,9 @@
     });
     open.forEach(function(row){ if (!feeIsReceived(row) && dealFee(row)) { pending += dealFee(row); pendingRows.push(row); } });
     function sumFee(rows){ return rows.reduce(function(s, r){ return s + (Number(r.record.feeReceived) || 0); }, 0); }
-    var stages = dealsData ? dealsData.stages : [];
+    var pipelines = dealsData ? dealsData.pipelines || [] : [];
     return {
-      loaded: !!dealsData, error: dealsError, open: open, all: all, stages: stages,
+      loaded: !!dealsData, error: dealsError, open: open, all: all, pipelines: pipelines,
       closedYtd: closedYtd, feesYtd: sumFee(closedYtd), closedMonth: closedMonth, feesMonth: sumFee(closedMonth),
       pending: pending, pendingRows: pendingRows, emdAtRisk: emdAtRisk, emdHeld: emdHeld, emdLostYtd: emdLostYtd,
       avgDaysToClose: daysToClose.length ? daysToClose.reduce(function(s, d){ return s + d; }, 0) / daysToClose.length : null,
@@ -3844,7 +4033,7 @@
       compute: dealsStat(function(dm){ return { value: dm.closedYtd.length, format: 'count', sub: money(dm.feesYtd) + ' in fees' }; }),
     },
     'deals-active': {
-      label: 'Deals in progress', category: 'Deals', type: 'stat', defaultSize: 'sm', desc: 'Opportunities sitting in a deal stage right now',
+      label: 'Won, fee not in', category: 'Deals', type: 'stat', defaultSize: 'sm', desc: 'Won deals in GHL with no fee received yet',
       compute: dealsStat(function(dm){ var n = dm.open.filter(function(r){ return !feeIsReceived(r); }).length; return { value: n, format: 'count', sub: money(dm.pending) + ' expected' }; }),
     },
     'avg-fee-per-deal': {
@@ -3908,34 +4097,35 @@
       },
     },
     'pipeline-funnel-chart': {
-      label: 'Acquisitions pipeline', category: 'Deals', type: 'chart', defaultSize: 'lg', desc: 'Chart - opportunities in every GHL stage, live',
+      label: 'Won deals by pipeline', category: 'Deals', type: 'chart', defaultSize: 'lg', desc: 'Chart - won deals this year in each GHL pipeline, by close date',
       render: function(){
         var dm = dealMetrics();
         if (!dm.loaded) return chartCardHTML(this.label, '', [], 'bar', '<div class="chart-empty">' + esc(dm.error ? 'Couldn\'t load from GHL: ' + dm.error : 'Loading from GHL…') + '</div>');
-        var total = dm.stages.reduce(function(s, st){ return s + st.count; }, 0);
-        var rows = dm.stages.map(function(st){
-          return { label: st.name, value: st.count, color: st.isClosed ? '--paid-ink' : st.isDeal ? '--series-rev' : '--series-exp',
-            tipTitle: st.name, tipName: 'Opportunities', note: total ? Math.round(st.count / total * 100) + '%' : '' };
+        var year = todayLocal().slice(0, 4), total = 0;
+        var rows = dm.pipelines.map(function(p){
+          var n = dm.open.filter(function(r){ return r.pipelineId === p.id && closeDateOf(r).slice(0, 4) === year; }).length;
+          total += n;
+          return { label: p.name, value: n, color: p.kind === 'retail' ? '--paid-ink' : '--series-rev', tipTitle: p.name, tipName: 'Won deals' };
         });
-        return chartCardHTML(this.label, (dealsData.pipeline ? dealsData.pipeline.name + ' · ' : '') + 'live from GHL',
-          [{ name: 'Deal stages', color: '--series-rev' }, { name: 'Other stages', color: '--series-exp' }], 'bar',
-          hbarChartHTML(rows, { fmt: function(v){ return String(v); }, empty: 'No opportunities in the pipeline.' }), { value: String(total), note: 'opportunities' });
+        return chartCardHTML(this.label, year + ' · by GHL close date', [], 'bar',
+          hbarChartHTML(rows, { fmt: function(v){ return String(v); }, empty: 'No won deals yet.' }), { value: String(total), note: 'won' });
       },
     },
     'deal-stage-chart': {
-      label: 'Fees by deal stage', category: 'Deals', type: 'chart', defaultSize: 'lg', desc: 'Chart - expected or received fees in each deal stage',
+      label: 'Fees by close month', category: 'Deals', type: 'chart', defaultSize: 'lg', desc: 'Chart - fees on won deals by GHL close month, this year',
       render: function(){
         var dm = dealMetrics();
         if (!dm.loaded) return chartCardHTML(this.label, '', [], 'bar', '<div class="chart-empty">' + esc(dm.error ? 'Couldn\'t load from GHL: ' + dm.error : 'Loading from GHL…') + '</div>');
-        var total = 0;
-        var rows = dm.stages.filter(function(s){ return s.isDeal; }).map(function(st){
-          var rs = dm.open.filter(function(r){ return r.stageId === st.id; });
+        var year = todayLocal().slice(0, 4), total = 0, rows = [];
+        for (var m = 1; m <= Number(todayLocal().slice(5, 7)); m++) {
+          var mk = year + '-' + String(m).padStart(2, '0');
+          var rs = dm.open.filter(function(r){ return closeDateOf(r).slice(0, 7) === mk; });
           var v = rs.reduce(function(s, r){ return s + dealFee(r); }, 0);
           total += v;
-          return { label: st.name, value: v, color: st.isClosed ? '--paid-ink' : '--series-rev', note: plural(rs.length, 'deal'), tipTitle: st.name + ' · ' + plural(rs.length, 'deal'), tipName: 'Fees' };
-        });
+          rows.push({ label: MONTH_ABBR[m - 1], value: v, color: '--series-rev', note: plural(rs.length, 'deal'), tipTitle: MONTH_ABBR[m - 1] + ' · ' + plural(rs.length, 'deal'), tipName: 'Fees' });
+        }
         return chartCardHTML(this.label, 'Received if paid, otherwise expected', [], 'bar',
-          hbarChartHTML(rows, { compact: true, empty: 'No fees entered yet - click a deal on the Deals tab to add one.' }), { value: money(total), note: 'across deal stages' });
+          hbarChartHTML(rows, { compact: true, empty: 'No won deals yet.' }), { value: money(total), note: year + ' won deals' });
       },
     },
   });
@@ -4197,6 +4387,196 @@
     reportsResizeTimer = setTimeout(function(){ if (currentView === 'reports') renderReportsDashboard(); }, 150);
   });
 
+
+  /* ---------- Bills: subscriptions, upcoming bills, owner contributions ---------- */
+  // Subscriptions and owner contributions come from the Relay imports
+  // (/api/bank-transactions -> insights, see lib/bank-insights.mts).
+  // Upcoming joins three sources: unpaid ledger bills by due date, active
+  // recurring templates by next run, and subscriptions by next expected
+  // charge. A subscription whose vendor already has a recurring template is
+  // left out so the same charge never shows twice.
+  var billInsights = null, billInsightsError = null;
+  function loadBillInsights(){
+    return fetch('/api/bank-transactions').then(function(res){ return res.json().then(function(d){ if (!res.ok) throw new Error(d.error || res.status); return d; }); })
+      .then(function(d){ billInsights = d.insights || null; billInsightsError = null; })
+      .catch(function(err){ billInsightsError = err.message; })
+      .then(renderBillInsights);
+  }
+  function vKey(name){ return String(name || '').toLowerCase().replace(/[^a-z]+/g, ' ').replace(/\b(llc|inc|co|corp|com|ltd)\b/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function addDaysISO(d, n){ return new Date(Date.parse(d + 'T00:00:00Z') + n * 86400000).toISOString().slice(0, 10); }
+  var CADENCE_LABEL = { weekly: 'Weekly', biweekly: 'Every 2 weeks', monthly: 'Monthly', quarterly: 'Quarterly', yearly: 'Yearly' };
+  var OWNER_NAME = { Art: 'Arturo Vazquez', Bryce: 'Bryce Roman-Tooley', Jesse: 'Jesse Pickar', '': 'Owner not assigned' };
+
+  function upcomingItems(){
+    var today = todayLocal(), horizon = addDaysISO(today, 30), items = [];
+    bills.forEach(function(b){
+      if ((b.status !== 'pending' && b.status !== 'approved') || !(Number(b.balance) > 0) || !b.dueDate) return;
+      if (b.dueDate > horizon) return;
+      items.push({ date: b.dueDate, vendor: b.vendorName || 'Unnamed vendor', amount: Number(b.balance), src: 'bill', note: (b.billNumber ? '#' + b.billNumber + ' · ' : '') + (b.status === 'pending' ? 'Pending approval' : 'Approved'), late: b.dueDate < today });
+    });
+    var tplKeys = {};
+    (recurringTemplatesCache || []).forEach(function(t){
+      if (!t.active || !t.nextRunDate) return;
+      tplKeys[vKey(t.vendorName)] = 1;
+      if (t.nextRunDate > horizon) return;
+      var amt = t.isVariable ? ((Number(t.varyFloor) || 0) + (Number(t.varyCeiling) || 0)) / 2 : Number(t.fixedAmount) || 0;
+      items.push({ date: t.nextRunDate, vendor: t.vendorName, amount: amt, src: 'rec', note: (CADENCE_LABEL[t.frequency === 'monthly' ? 'monthly' : t.frequency] || t.frequency) + ' template' + (t.isVariable ? ' · estimate' : ''), late: false });
+    });
+    ((billInsights && billInsights.subscriptions) || []).forEach(function(sub){
+      if (sub.status === 'stale' || tplKeys[sub.key] || sub.nextDue > horizon) return;
+      items.push({ date: sub.nextDue, vendor: sub.vendor, amount: sub.expectedCharge, src: 'sub',
+        note: (CADENCE_LABEL[sub.cadence] || sub.cadence) + ' · avg ' + money(sub.avgCharge) + (sub.paidBy.length ? ' · paid by ' + sub.paidBy.join(', ') : '') + ' · ••' + sub.accounts.join(', ••'),
+        awaiting: sub.status === 'awaiting-import', missed: sub.status === 'missed' });
+    });
+    return items.sort(function(a, b){ return a.date.localeCompare(b.date) || b.amount - a.amount; });
+  }
+
+  function renderUpcoming(){
+    var el = document.getElementById('upcoming-card'); if (!el) return;
+    var today = todayLocal(), items = upcomingItems();
+    var late = items.filter(function(i){ return i.late; });
+    var waiting = items.filter(function(i){ return i.awaiting; });
+    var next = items.filter(function(i){ return !i.late && !i.awaiting; });
+    var total = next.reduce(function(s, i){ return s + i.amount; }, 0) + late.reduce(function(s, i){ return s + i.amount; }, 0);
+    var SRC = { bill: ['bill', 'Bill'], rec: ['rec', 'Recurring'], sub: ['sub', 'Subscription'] };
+    function row(i){
+      var d = daysBetween(today, i.date), cls = i.late ? ' late' : d <= 7 && d >= 0 ? ' soon' : '';
+      return '<div class="up-row"><div class="up-date' + cls + '"><b>' + Number(i.date.slice(8, 10)) + '</b><span>' + MON3[Number(i.date.slice(5, 7)) - 1] + '</span></div>' +
+        '<div style="min-width:0"><div class="won-name">' + esc(i.vendor) + '</div><div class="won-sub"><span class="src-badge ' + SRC[i.src][0] + '">' + SRC[i.src][1] + '</span>' + esc(i.note) + '</div></div>' +
+        '<div class="up-amt">' + money(i.amount) + '<small>' + (i.late ? Math.abs(d) + 'd overdue' : i.awaiting ? 'not imported yet' : d === 0 ? 'today' : 'in ' + d + 'd') + '</small></div></div>';
+    }
+    el.innerHTML = '<div class="chart-head"><div><h3 class="report-h">Upcoming bills</h3><div class="chart-sub">Next 30 days · bills, recurring templates and Relay subscriptions</div></div></div>' +
+      '<div class="chart-headline">' + money0(total) + '<span style="font-size:13px;font-weight:600;color:var(--muted);margin-left:8px">' + (next.length + late.length) + ' due' + (late.length ? ' · ' + late.length + ' overdue' : '') + '</span></div>' +
+      (late.length ? '<div class="up-group" style="color:var(--overdue-ink)">Overdue</div>' + late.map(row).join('') : '') +
+      (next.length ? '<div class="up-group">Coming up</div>' + next.map(row).join('') : '<div class="chart-empty">Nothing due in the next 30 days.</div>') +
+      (waiting.length ? '<div class="up-group">Expected since the last Relay import</div>' + waiting.map(row).join('') +
+        '<div class="ins-sub" style="margin-top:8px">These subscriptions should have charged after your latest statement. Import the newer Relay CSV to confirm.</div>' : '') +
+      (billInsightsError ? '<div class="ins-sub" style="margin-top:8px;color:var(--overdue-ink)">Couldn\'t load Relay subscriptions: ' + esc(billInsightsError) + '</div>' : '');
+  }
+
+  // Owner contributions start from what the P&L reconciled (auto-matched to a
+  // vendor charge = owner paid, else owner deposited). The two buttons
+  // override that per entry; Reset goes back to the P&L match.
+  var contribOpen = {}, contribPicking = null, contribSaving = false;
+  function contribEntryHTML(e){
+    var paid = e.type === 'paid', picking = contribPicking === e.id;
+    var covers = paid && e.expenseId ? (e.candidates.filter(function(c){ return c.id === e.expenseId; })[0] || null) : null;
+    var desc = paid ? (covers ? 'Covers ' + esc(covers.payee) + ' · ' + esc(niceDate(covers.date)) + ' · ••' + esc(covers.account) : 'Covers ' + esc(e.vendor || 'a vendor') + ' · charge not in Relay') : 'Cash into ••' + esc(e.account);
+    var opts = e.candidates.map(function(c){ return '<option value="' + esc(c.id) + '"' + (c.id === e.expenseId ? ' selected' : '') + '>' + esc(c.payee) + ' · ' + esc(niceDate(c.date)) + ' · ' + money(c.amount) + ' · ••' + esc(c.account) + '</option>'; }).join('');
+    var noteFirst = !e.candidates.length || (paid && !e.expenseId);
+    return '<div class="ce-row" data-ce-id="' + esc(e.id) + '">' +
+      '<div class="ce-top"><div style="min-width:0"><div class="won-name" style="font-size:13.5px">' + esc(niceDate(e.date)) + ' · ' + esc(e.payee) + '</div>' +
+        '<div class="ins-sub" style="white-space:normal">' + desc + (e.reference ? ' · ' + esc(e.reference) : '') + '</div></div>' +
+        '<div style="text-align:right"><div class="ce-amt">' + money(e.amount) + '</div>' +
+        '<span class="ce-src' + (e.source === 'manual' ? ' manual' : '') + '">' + (e.source === 'manual' ? 'Edited' : 'From P&amp;L') + '</span>' +
+        (e.source === 'manual' ? '<button type="button" class="ce-reset" data-ce-reset="1" title="Go back to the P&amp;L match">Reset</button>' : '') + '</div></div>' +
+      '<div class="ce-btns" role="group" aria-label="Contribution type">' +
+        '<button type="button" class="paid' + (paid ? ' on' : '') + '" data-ce-type="paid"' + (contribSaving ? ' disabled' : '') + ' aria-pressed="' + paid + '">Owner paid</button>' +
+        '<button type="button" class="dep' + (!paid ? ' on' : '') + '" data-ce-type="deposited"' + (contribSaving ? ' disabled' : '') + ' aria-pressed="' + !paid + '">Owner deposited</button></div>' +
+      (picking ? '<div class="ce-pick"><select data-ce-expense aria-label="Vendor charge this covered">' + opts + '<option value=""' + (noteFirst ? ' selected' : '') + '>Charge isn\'t in Relay (type the vendor)</option></select>' +
+        '<input type="text" data-ce-note aria-label="Vendor" placeholder="Vendor, e.g. Notion annual" value="' + esc(e.note || '') + '"' + (noteFirst ? '' : ' hidden') + '>' +
+        '<button type="button" class="btn primary" data-ce-save="1" style="padding:7px 12px">Save</button><button type="button" class="btn" data-ce-cancel="1" style="padding:7px 12px">Cancel</button>' +
+        (e.candidates.length ? '' : '<span class="ins-sub">No same-amount vendor charge within 30 days.</span>') + '</div>' : '') +
+    '</div>';
+  }
+  function saveContribType(id, body){
+    contribSaving = true; renderContributions();
+    return fetch('/api/bank-transactions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ action: 'contrib-type', id: id }, body)) })
+      .then(function(res){ return res.json().then(function(d){ if (!res.ok) throw new Error(d.error || ('Request failed (' + res.status + ')')); }); })
+      .then(function(){ contribPicking = null; showToast(body.type === 'auto' ? 'Back to the P&L match.' : body.type === 'paid' ? 'Marked owner paid.' : 'Marked owner deposited.'); return window.bankReload ? window.bankReload() : loadBillInsights(); })
+      .catch(function(err){ showToast(err.message, true); })
+      .then(function(){ contribSaving = false; renderContributions(); });
+  }
+  var contribCardEl = document.getElementById('contrib-card');
+  if (contribCardEl) {
+    contribCardEl.addEventListener('click', function(ev){
+      var t = ev.target.closest('[data-ce-owner]');
+      if (t) { var k = t.getAttribute('data-ce-owner'); contribOpen[k] = !contribOpen[k]; renderContributions(); return; }
+      var row = ev.target.closest('[data-ce-id]'); if (!row || contribSaving) return;
+      var id = row.getAttribute('data-ce-id');
+      if (ev.target.closest('[data-ce-reset]')) { saveContribType(id, { type: 'auto' }); return; }
+      if (ev.target.closest('[data-ce-cancel]')) { contribPicking = null; renderContributions(); return; }
+      if (ev.target.closest('[data-ce-save]')) {
+        var sel = row.querySelector('[data-ce-expense]'), note = row.querySelector('[data-ce-note]');
+        var expenseId = sel ? sel.value : '';
+        if (!expenseId && !(note && note.value.trim())) { showToast('Type the vendor this paid for.', true); if (note) { note.hidden = false; note.focus(); } return; }
+        saveContribType(id, { type: 'paid', expenseId: expenseId || null, note: expenseId ? '' : note.value.trim() });
+        return;
+      }
+      var b = ev.target.closest('[data-ce-type]'); if (!b) return;
+      if (b.getAttribute('data-ce-type') === 'deposited') { if (!b.classList.contains('on')) saveContribType(id, { type: 'deposited' }); else { contribPicking = null; renderContributions(); } return; }
+      contribPicking = contribPicking === id ? null : id; renderContributions();
+    });
+    contribCardEl.addEventListener('change', function(ev){
+      var sel = ev.target.closest('[data-ce-expense]'); if (!sel) return;
+      var note = sel.parentNode.querySelector('[data-ce-note]'); if (note) note.hidden = !!sel.value;
+    });
+  }
+
+  function renderContributions(){
+    var el = document.getElementById('contrib-card'); if (!el) return;
+    var c = billInsights && billInsights.contributions;
+    if (!c) { el.innerHTML = '<div class="chart-empty">' + esc(billInsightsError ? 'Couldn\'t load Relay data: ' + billInsightsError : 'Loading owner contributions…') + '</div>'; return; }
+    var months = [], cur = todayLocal().slice(0, 7);
+    for (var i = 5; i >= 0; i--) { var y = +cur.slice(0, 4), m = +cur.slice(5, 7) - i; while (m < 1) { m += 12; y--; } months.push(y + '-' + String(m).padStart(2, '0')); }
+    var peak = 1; c.owners.forEach(function(o){ months.forEach(function(mk){ peak = Math.max(peak, o.byMonth[mk] || 0); }); });
+    el.innerHTML = '<div class="chart-head"><div><h3 class="report-h">Owner contributions</h3><div class="chart-sub">Reconciled from the P&amp;L · review entries to mark owner paid or owner deposited</div></div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--muted)"><span class="legend-dot" style="background:var(--series-rev)"></span>Owner deposited<span class="legend-dot" style="background:var(--series-exp)"></span>Owner paid</div></div>' +
+      '<div class="chart-headline">' + money0(c.total) + '<span style="font-size:13px;font-weight:600;color:var(--muted);margin-left:8px">' + money0(c.cash) + ' deposited · ' + money0(c.paidVendors) + ' owner paid</span></div>' +
+      (c.owners.length ? c.owners.map(function(o){
+        var vendors = Object.keys(o.vendors).map(function(v){ return esc(v) + ' ' + money0(o.vendors[v]); }).join(', ');
+        return '<div class="own-row"><div class="own-head"><span>' + esc(OWNER_NAME[o.owner] || o.owner) + '</span><span>' + money0(o.total) + '</span></div>' +
+          '<div class="split-bar"><i style="width:' + (o.total ? o.cash / o.total * 100 : 0) + '%;background:var(--series-rev)"></i><i style="width:' + (o.total ? o.paidVendors / o.total * 100 : 0) + '%;background:var(--series-exp)"></i></div>' +
+          '<div class="ins-sub">' + money0(o.cash) + ' deposited · ' + money0(o.paidVendors) + ' owner paid' + (vendors ? ' (' + vendors + ')' : '') + ' · ' + o.count + ' entr' + (o.count === 1 ? 'y' : 'ies') + ' · last ' + esc(niceDate(o.lastDate)) + '</div>' +
+          '<div class="mini-months" title="Last 6 months">' + months.map(function(mk){ var v = o.byMonth[mk] || 0; return '<i style="height:' + Math.max(2, v / peak * 28) + 'px" title="' + MON3[+mk.slice(5, 7) - 1] + ': ' + money0(v) + '"></i>'; }).join('') + '</div>' +
+          '<div style="display:flex;gap:3px">' + months.map(function(mk){ return '<span class="ins-sub" style="flex:1;text-align:center;font-size:10.5px">' + MON3[+mk.slice(5, 7) - 1] + '</span>'; }).join('') + '</div>' +
+          '<button type="button" class="ce-toggle" data-ce-owner="' + esc(o.owner) + '">' + (contribOpen[o.owner] ? 'Hide entries' : 'Review ' + o.count + ' entr' + (o.count === 1 ? 'y' : 'ies')) + (o.edited ? ' · ' + o.edited + ' edited' : '') + '</button>' +
+          (contribOpen[o.owner] ? '<div class="ce-list">' + o.entries.map(contribEntryHTML).join('') + '</div>' : '') +
+        '</div>';
+      }).join('') : '<div class="chart-empty">No owner contributions in the Relay imports yet.</div>') +
+      (c.owners.some(function(o){ return !o.owner; }) ? '<div class="ins-sub" style="margin-top:6px">Assign the bank source owner on Bank &amp; P&amp;L to move unassigned money to a partner.</div>' : '');
+  }
+
+  function renderSubscriptions(){
+    var kp = document.getElementById('subs-kpis'), el = document.getElementById('subs-card');
+    if (!kp || !el) return;
+    var d = billInsights;
+    if (!d) { kp.innerHTML = ''; el.innerHTML = '<div class="chart-empty">' + esc(billInsightsError ? 'Couldn\'t load Relay data: ' + billInsightsError : 'Loading subscriptions from Relay…') + '</div>'; return; }
+    var s = d.summary, subs = d.subscriptions || [], active = subs.filter(function(x){ return x.status !== 'stale'; });
+    var next = active.filter(function(x){ return x.nextDue >= todayLocal(); }).sort(function(a, b){ return a.nextDue.localeCompare(b.nextDue); })[0];
+    var winLabel = s.avgWindow.length ? MON3[+s.avgWindow[0].slice(5, 7) - 1] + ' to ' + MON3[+s.avgWindow[s.avgWindow.length - 1].slice(5, 7) - 1] : '';
+    function tile(label, value, sub, tone){ return '<div class="aging-tile' + (tone ? ' ' + tone : '') + '"><div class="label">' + label + '</div><div class="value">' + value + '</div><div class="tile-sub">' + sub + '</div></div>'; }
+    kp.innerHTML =
+      tile('Subscriptions', String(s.active), 'active from Relay') +
+      tile('Monthly run-rate', money0(s.monthlyRunRate), money0(s.monthlyRunRate * 12) + ' a year') +
+      tile('Avg monthly actual', money0(s.avgMonthlyActual), winLabel ? winLabel + ' charges' : 'last 3 months') +
+      tile('Usage-based', money0(s.usageMonthly), 'avg per month, no fixed date') +
+      tile('Next charge', next ? esc(niceDate(next.nextDue)) : '-', next ? esc(next.vendor) + ' · ' + money0(next.expectedCharge) : 'none scheduled', next && daysBetween(todayLocal(), next.nextDue) <= 7 ? 'warn' : '');
+    var STATUS = { upcoming: ['good', 'Upcoming'], 'awaiting-import': ['warn', 'Check next import'], missed: ['bad', 'Missed a charge'], stale: ['muted', 'Likely cancelled'] };
+    function spark(h){ var pk = Math.max.apply(null, h.map(function(x){ return x.amount; }).concat([1])); return '<span class="spark" title="Last ' + h.length + ' charges">' + h.map(function(x){ return '<i style="height:' + Math.max(2, x.amount / pk * 22) + 'px" title="' + esc(x.date) + ': ' + money(x.amount) + '"></i>'; }).join('') + '</span>'; }
+    el.innerHTML = '<div class="chart-head"><div><h3 class="report-h">Subscriptions</h3><div class="chart-sub">Detected from Relay imports by vendor and cadence · due dates follow the last charge</div></div></div>' +
+      '<div class="access-table-wrap"><table class="subs-table"><thead><tr><th>Vendor</th><th class="hide-sm">Cadence</th><th class="num">Avg charge</th><th class="num hide-sm">Latest</th><th class="num">Per month</th><th>Next due</th><th class="hide-sm">History</th><th>Status</th></tr></thead><tbody>' +
+      (subs.length ? subs.map(function(x){
+        var st = STATUS[x.status] || ['', x.status];
+        return '<tr class="' + (x.status === 'stale' ? 'stale' : '') + '"><td><div class="won-name">' + esc(x.vendor) + '</div><div class="ins-sub">' + esc(x.category) + ' · ••' + esc(x.accounts.join(', ••')) + (x.paidBy.length ? ' · paid by ' + esc(x.paidBy.join(', ')) : '') + '</div></td>' +
+          '<td class="hide-sm">' + esc(CADENCE_LABEL[x.cadence] || x.cadence) + (x.dayOfMonth ? '<div class="ins-sub">around the ' + x.dayOfMonth + (x.dayOfMonth % 10 === 1 && x.dayOfMonth !== 11 ? 'st' : x.dayOfMonth % 10 === 2 && x.dayOfMonth !== 12 ? 'nd' : x.dayOfMonth % 10 === 3 && x.dayOfMonth !== 13 ? 'rd' : 'th') + '</div>' : '') + '</td>' +
+          '<td class="num">' + money(x.avgCharge) + (x.variable ? '<div class="ins-sub">' + money0(x.minCharge) + ' to ' + money0(x.maxCharge) + '</div>' : '') + '</td>' +
+          '<td class="num hide-sm">' + money(x.lastCharge) + '<div class="ins-sub">' + esc(niceDate(x.lastDate)) + '</div></td>' +
+          '<td class="num"><b>' + money(x.monthlyCost) + '</b></td>' +
+          '<td>' + (x.status === 'stale' ? '-' : esc(niceDate(x.nextDue)) + '<div class="ins-sub">' + money(x.expectedCharge) + ' expected</div>') + '</td>' +
+          '<td class="hide-sm">' + spark(x.history) + '</td>' +
+          '<td><span class="deal-badge ' + st[0] + '">' + st[1] + '</span></td></tr>';
+      }).join('') : '<tr><td colspan="8" class="empty-row">No repeating charges found yet. Import a few months of Relay CSVs on Bank &amp; P&amp;L.</td></tr>') +
+      '</tbody></table></div>' +
+      ((d.usage || []).length ? '<div class="up-group" style="margin-top:16px">Usage-based vendors (no fixed due date)</div>' +
+        d.usage.map(function(u){ return '<div class="up-row" style="grid-template-columns:minmax(0,1fr) auto"><div><div class="won-name">' + esc(u.vendor) + '</div><div class="ins-sub">' + u.charges + ' charges over ' + u.months + ' month' + (u.months === 1 ? '' : 's') + ' · avg charge ' + money(u.avgCharge) + ' · last ' + esc(niceDate(u.lastDate)) + '</div></div><div class="up-amt">' + money(u.avgMonthly) + '<small>avg per month</small></div></div>'; }).join('') : '');
+  }
+
+  function renderBillInsights(){ renderSubscriptions(); renderUpcoming(); renderContributions(); }
+  // The Bank & P&L tab loads the same endpoint; it hands its insights over so
+  // the page doesn't fetch it twice.
+  window.setBillInsights = function(ins, err){ if (ins || !billInsights) billInsights = ins || null; billInsightsError = err || null; renderBillInsights(); };
+
   fetchReportConfig();
   fetchYtdBaseline();
   fetchPartners();
@@ -4246,11 +4626,8 @@
     var items = [];
     if (dealsData) {
       var today = todayLocal();
-      function inClosed(r){ return dealsData.stages.some(function(s){ return s.id === r.stageId && s.isClosed; }); }
-      var late = dealsData.deals.filter(function(r){ return !feeIsReceived(r) && !inClosed(r) && r.record && r.record.expectedCloseDate && r.record.expectedCloseDate < today; }).length;
-      if (late) items.push({ tab: 'deals', label: late + ' deal' + (late === 1 ? '' : 's') + ' past expected close' });
-      var closedNoFee = dealsData.deals.filter(function(r){ return inClosed(r) && !feeIsReceived(r); }).length;
-      if (closedNoFee) items.push({ tab: 'deals', label: closedNoFee + ' closed deal' + (closedNoFee === 1 ? '' : 's') + ' without the fee recorded' });
+      var closedNoFee = dealsData.deals.filter(function(r){ return !feeIsReceived(r); }).length;
+      if (closedNoFee) items.push({ tab: 'deals', label: closedNoFee + ' won deal' + (closedNoFee === 1 ? '' : 's') + ' without the fee recorded' });
       var lostEmd = (dealsData.fellOut || []).filter(function(r){ return r.record && r.record.emdStatus === 'held'; }).length;
       if (lostEmd) items.push({ tab: 'deals', label: lostEmd + ' fell-out deal' + (lostEmd === 1 ? '' : 's') + ' with EMD still held' });
     }
@@ -4280,7 +4657,7 @@
   /* ---------- Refresh ---------- */
   if (refreshBtn) refreshBtn.addEventListener('click', function(){
     if (currentView === 'deals') { loadDeals(); }
-    else if (currentView === 'bills') { fetchBills(); }
+    else if (currentView === 'bills') { fetchBills(); refreshRecurringCount(); loadBillInsights(); }
     else if (currentView === 'partners') { fetchPartners(); }
     else if (currentView === 'reports') { fetchReportConfig(); fetchBills(); loadDeals(); fetchPartners(); refreshRecurringCount(); }
     else if (currentView === 'access' && window.renderAccessTab) { window.renderAccessTab(); showToast('Access list refreshed.'); }
@@ -4434,7 +4811,7 @@ const expenses=['Marketing','Software','Professional fees','Bank fees','Meals','
 const money=(v,c='USD')=>new Intl.NumberFormat('en-US',{style:'currency',currency:c}).format(v/100);
 async function api(body){const r=await fetch('/api/bank-transactions',body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed');return d;}
 function selected(){return rows.filter(t=>(!$('bank-account').value||($('bank-account').value==='business'?['2910','8661','8662'].includes(t.account):$('bank-account').value==='localcare'?['8661','8662'].includes(t.account):$('bank-account').value==='partners'?['2911','7503','7510'].includes(t.account):t.account===$('bank-account').value))&&(!$('bank-from').value||t.date>=$('bank-from').value)&&(!$('bank-to').value||t.date<=$('bank-to').value)&&t.currency===$('bank-currency').value);}
-function stats(list){let r={income:0,other:0,cost:0,expense:0,inflow:0,outflow:0,unknown:0,review:0};for(const t of list){if(t.status!=='SETTLED')continue;if(t.category!=='Transfer'){if(t.cents>0)r.inflow+=t.cents;else r.outflow-=t.cents;}if(!t.reviewed)r.review++;if(t.category==='Revenue')r.income+=t.cents;else if(t.category==='Other income')r.other+=t.cents;else if(t.category==='Cost of revenue')r.cost-=t.cents;else if(expenses.includes(t.category))r.expense-=t.cents;else if(t.category==='Uncategorized')r.unknown++;}r.gross=r.income-r.cost;r.net=r.gross+r.other-r.expense;return r;}
+function stats(list){let r={income:0,other:0,cost:0,expense:0,inflow:0,outflow:0,unknown:0,review:0};for(const t of list){if(t.status!=='SETTLED')continue;if(t.category!=='Transfer'&&!t.excludeFromCash){if(t.cents>0)r.inflow+=t.cents;else r.outflow-=t.cents;}if(!t.reviewed)r.review++;if(t.category==='Revenue')r.income+=t.cents;else if(t.category==='Other income')r.other+=t.cents;else if(t.category==='Cost of revenue')r.cost-=t.cents;else if(expenses.includes(t.category))r.expense-=t.cents;else if(t.category==='Uncategorized')r.unknown++;}r.gross=r.income-r.cost;r.net=r.gross+r.other-r.expense;return r;}
 function render(){const currency=$('bank-currency').value||'USD',fmt=v=>money(v,currency),all=selected(),list=all.filter(t=>(!$('bank-search').value||(t.payee+' '+t.reference+' '+t.description).toLowerCase().includes($('bank-search').value.toLowerCase()))&&(!$('bank-review').checked||!t.reviewed));const r=stats(all);const lc=stats(all.filter(t=>['8661','8662'].includes(t.account))),dc=stats(all.filter(t=>t.account==='2910'));$('bank-entities').innerHTML='<table class="access-table"><thead><tr><th>Business role</th><th>Revenue + other income</th><th>Operating costs</th><th>Profit / loss</th></tr></thead><tbody>'+[['Dodger City · revenue / profit',dc],['LocalCare · operating expenses',lc]].map(([name,v])=>'<tr><td>'+name+'</td><td>'+fmt(v.income+v.other)+'</td><td>'+fmt(v.cost+v.expense)+'</td><td>'+fmt(v.net)+'</td></tr>').join('')+'</tbody></table>';
 $('bank-kpis').innerHTML=[['External cash in',fmt(r.inflow)],['External cash out',fmt(r.outflow)],['External net cash',fmt(r.inflow-r.outflow)],['Provisional net profit',fmt(r.net)],['Owner contributions',fmt(all.filter(t=>t.status==='SETTLED'&&t.category==='Owner contribution').reduce((s,t)=>s+t.cents,0))],['Uncategorized',r.unknown+' transactions'],['Needs review',r.review+' transactions']].map(([k,v])=>'<div class="aging-tile"><div class="label">'+k+'</div><div class="value">'+esc(v)+'</div></div>').join('');
 $('bank-capital').innerHTML='<table class="access-table"><thead><tr><th>Partner</th><th>External contributions</th><th>External distributions</th></tr></thead><tbody>'+['Art','Bryce','Jesse',''].map(owner=>{const items=all.filter(t=>t.owner===owner&&t.status==='SETTLED');return '<tr><td>'+esc(owner||'Owner not assigned')+'</td><td>'+fmt(items.filter(t=>t.category==='Owner contribution').reduce((s,t)=>s+t.cents,0))+'</td><td>'+fmt(-items.filter(t=>t.category==='Owner distribution').reduce((s,t)=>s+t.cents,0))+'</td></tr>';}).join('')+'</tbody></table>';
@@ -4543,12 +4920,13 @@ function renderPeriods(all,fmt){
   :'Projection = average of '+basisTxt+(model.basis.length<model.n?' (only '+model.basis.length+' complete month'+(model.basis.length===1?'':'s')+' available)':'')+(model.skipped?'; '+mLabel(model.skipped)+' is left out because its history starts mid-month':'')+'. '+mLabel(model.cur)+' is in progress: actual to date plus the run-rate for the days left. Wholesale fees are lumpy, so a single closing can swing the top-line run-rate; use "No new revenue" for a spend-only view.';
 }
 $('bank-period-view').onchange=$('bank-period-basis').onchange=$('bank-period-rev').onchange=$('bank-period-ahead').onchange=()=>render();
-async function load(){try{const d=await api();rows=d.rows;cats=d.categories;$('bank-total-owner').value=d.sources?.['TOTAL CHECKING']||'';$('bank-adv-owner').value=d.sources?.['Adv Plus Banking']||'Art';$('bank-account').innerHTML='<option value="business">Business P&L · Dodger City + LocalCare</option><option value="localcare">LocalCare · expense accounts</option><option value="2910">Dodger City · revenue / profit account</option><option value="partners">Partner payout accounts</option><option value="">All accounts · including partner accounts</option>'+d.accounts.filter(a=>a!=='2910').map(a=>'<option value="'+a+'">'+({'8661':'LocalCare operating · 8661','8662':'LocalCare reserve · 8662','2911':'Bryce allocation · 2911','7503':'Art allocation · 7503','7510':'Jesse allocation · 7510'}[a]||a)+'</option>').join('');$('bank-currency').innerHTML=[...new Set(rows.map(t=>t.currency))].sort().map(c=>'<option>'+c+'</option>').join('');$('bank-bulk-category').innerHTML=cats.map(c=>'<option>'+c+'</option>').join('');render();}catch(e){$('bank-message').textContent=e.message;}}
+async function load(){try{const d=await api();if(window.setBillInsights)window.setBillInsights(d.insights);rows=d.rows;cats=d.categories;$('bank-total-owner').value=d.sources?.['TOTAL CHECKING']||'';$('bank-adv-owner').value=d.sources?.['Adv Plus Banking']||'Art';$('bank-account').innerHTML='<option value="business">Business P&L · Dodger City + LocalCare</option><option value="localcare">LocalCare · expense accounts</option><option value="2910">Dodger City · revenue / profit account</option><option value="partners">Partner payout accounts</option><option value="">All accounts · including partner accounts</option>'+d.accounts.filter(a=>a!=='2910').map(a=>'<option value="'+a+'">'+({'8661':'LocalCare operating · 8661','8662':'LocalCare reserve · 8662','2911':'Bryce allocation · 2911','7503':'Art allocation · 7503','7510':'Jesse allocation · 7510'}[a]||a)+'</option>').join('');$('bank-currency').innerHTML=[...new Set(rows.map(t=>t.currency))].sort().map(c=>'<option>'+c+'</option>').join('');$('bank-bulk-category').innerHTML=cats.map(c=>'<option>'+c+'</option>').join('');render();}catch(e){$('bank-message').textContent=e.message;if(window.setBillInsights)window.setBillInsights(null,e.message);}}
 async function categorize(ids,category){if(!ids.length){$('bank-message').textContent='Select transactions first.';return;}try{await api({action:'categorize',ids,category});rows.forEach(t=>{if(ids.includes(t.id)){t.category=category;t.reviewed=true;t.classificationSource='Manual';}});render();$('bank-message').textContent='Categories saved.';}catch(e){$('bank-message').textContent=e.message;render();}}
 $('bank-total-owner').onchange=()=>saveSource('TOTAL CHECKING',$('bank-total-owner').value);
 $('bank-adv-owner').onchange=()=>saveSource('Adv Plus Banking',$('bank-adv-owner').value);
 async function saveSource(source,owner){try{await api({action:'source-owner',source,owner});await reloadPreservingFilters();$('bank-message').textContent='Bank-source attribution saved for existing and future imports.';}catch(e){$('bank-message').textContent=e.message;}}
-async function reloadPreservingFilters(){const d=await api();rows=d.rows;render();}
+async function reloadPreservingFilters(){const d=await api();if(window.setBillInsights)window.setBillInsights(d.insights);rows=d.rows;render();}
+window.bankReload=reloadPreservingFilters;
 $('bank-table').addEventListener('change',async e=>{if(e.target.classList.contains('bank-owner')){try{await api({action:'owner',id:e.target.dataset.id,owner:e.target.value});await reloadPreservingFilters();}catch(err){$('bank-message').textContent=err.message;}return;}if(e.target.classList.contains('bank-category'))categorize([e.target.dataset.id],e.target.value);});
 $('bank-apply').onclick=()=>categorize([...document.querySelectorAll('.bank-select:checked')].map(e=>e.value),$('bank-bulk-category').value);
 $('bank-confirm').onclick=()=>{const ids=[...document.querySelectorAll('.bank-select:checked')].map(e=>e.value);if(!ids.length){$('bank-message').textContent='Select transactions first.';return;} (async()=>{for(const c of cats){const group=rows.filter(t=>ids.includes(t.id)&&t.category===c).map(t=>t.id);if(group.length)await categorize(group,c);}})();};

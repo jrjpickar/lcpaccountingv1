@@ -29,19 +29,19 @@ export async function fetchAllOpportunities(
   query: OpportunityQuery,
 ): Promise<OpportunityFetchResult> {
   const all: any[] = [];
-  let startAfter: string | undefined;
-  let startAfterId: string | undefined;
+  const seen = new Set<string>();
   let truncated = false;
 
-  for (let page = 0; page < MAX_PAGES; page++) {
+  // Paginate with the numeric `page` param. The snake_case cursor params
+  // (start_after / start_after_id) are rejected with a 422 on this endpoint.
+  for (let page = 1; page <= MAX_PAGES; page++) {
     const url = new URL(`${GHL_BASE}/opportunities/search`);
     url.searchParams.set("location_id", locationId);
     url.searchParams.set("pipeline_id", query.pipelineId);
     if (query.pipelineStageId) url.searchParams.set("pipeline_stage_id", query.pipelineStageId);
     if (query.status) url.searchParams.set("status", query.status);
     url.searchParams.set("limit", String(PAGE_LIMIT));
-    if (startAfter) url.searchParams.set("start_after", startAfter);
-    if (startAfterId) url.searchParams.set("start_after_id", startAfterId);
+    url.searchParams.set("page", String(page));
 
     const res = await fetch(url, {
       headers: {
@@ -61,19 +61,19 @@ export async function fetchAllOpportunities(
 
     const body: any = await res.json();
     const opps: any[] = body?.opportunities ?? [];
-    all.push(...opps);
+    let fresh = 0;
+    for (const o of opps) {
+      const id = String(o?.id ?? "");
+      if (id && seen.has(id)) continue; // a page that repeats rows means paging stopped advancing
+      if (id) seen.add(id);
+      all.push(o);
+      fresh++;
+    }
 
-    if (opps.length < PAGE_LIMIT) break; // fewer than a full page means we're done
-
-    // NOTE: this endpoint validated request params as snake_case
-    // (location_id, not locationId) - checking both cases here in case the
-    // response's `meta` object mirrors that, or uses camelCase instead.
-    const last = opps[opps.length - 1];
-    const meta = body?.meta ?? {};
-    startAfter = meta.start_after ?? meta.startAfter ?? last?.updatedAt;
-    startAfterId = meta.start_after_id ?? meta.startAfterId ?? last?.id;
-    if (!startAfterId) break; // no cursor to continue with - stop rather than loop forever
-    if (page === MAX_PAGES - 1) truncated = true;
+    const total = Number(body?.meta?.total);
+    if (opps.length < PAGE_LIMIT || fresh === 0) break;
+    if (Number.isFinite(total) && all.length >= total) break;
+    if (page === MAX_PAGES) truncated = true;
   }
 
   return { opportunities: all, truncated };

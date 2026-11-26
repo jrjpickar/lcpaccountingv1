@@ -72,3 +72,46 @@ test('recurring charges on new dates import; only same-date charges from a previ
  // same charge in two overlapping CSVs within one batch counts once
  r=await (await handler(req({action:'import',files:[{name,text:header+line('12/01/2026','250.05')},{name:'Relay copy #7510.csv',text:header+line('12/01/2026','250.05')}]}))).json();assert.equal(r.added,1);assert.equal(r.duplicates,1);
 });
+
+test('owner-paid vendor charge and its ACH contribution pair up: counted once, no business cash',async()=>{
+ const {classify,pairOwnerPaid}=await import('../netlify/functions/lib/bank-metrics.mts');
+ const csv2=header+'11/03/2026,Twilio,,Spend,,Personal card - paid by Arturo Vazquez,SETTLED,-300.00,USD,900.00\r\n'+
+  '11/03/2026,Adv Plus Banking,,Receive,,ACH Pull - Arturo covered Twilio $300 personally,SETTLED,300.00,USD,1200.00\r\n'+
+  '11/04/2026,Twilio,,Spend,,Corporate Card - 8310,SETTLED,-300.00,USD,600.00\r\n';
+ const rows=pairOwnerPaid(parseBankCSV(csv2,'Relay #8661.csv').map(t=>({...t,...classify(t)})));
+ const tw=rows.filter(t=>t.payee==='Twilio'),ach=rows.find(t=>t.payee==='Adv Plus Banking')!;
+ assert.equal(ach.category,'Owner contribution');assert.equal(ach.owner,'Art');assert.ok(ach.pairId);
+ assert.equal(tw[0].pairId,ach.pairId);assert.equal(tw[0].owner,'Art');assert.equal(tw[0].ownerPaid,true);
+ assert.equal(tw[1].pairId,null); // a normal company-card Twilio charge is untouched
+ const m=metrics(rows);assert.equal(m.contributions,30000);assert.equal(m.expenses,60000);assert.equal(m.inflow,0);assert.equal(m.outflow,30000);
+});
+
+test('owner paid / owner deposited edits start from the P&L match and override it',async()=>{
+ const {token}=await signSession({id:'owner',email:OWNER_EMAIL,name:'Owner'},'pin');
+ const req=(body?:any)=>new Request('https://test/api/bank-transactions',{method:body?'POST':'GET',headers:{'x-ledger-auth':token},...(body?{body:JSON.stringify(body)}:{})});
+ const csv3=header+'12/02/2026,Slack,,Spend,,Corporate Card - 8310,SETTLED,-88.00,USD,900.00\r\n'+
+  '12/03/2026,Adv Plus Banking,,Receive,,ACH Pull,SETTLED,88.00,USD,988.00\r\n'+
+  '12/05/2026,Notion,,Spend,,Personal card - paid by Arturo Vazquez,SETTLED,-40.00,USD,948.00\r\n'+
+  '12/05/2026,Adv Plus Banking,,Receive,,ACH Pull - Arturo covered Notion,SETTLED,40.00,USD,988.00\r\n';
+ await handler(req({action:'import',files:[{name:'Relay #8661.csv',text:csv3}]}));
+ const load=async()=>(await (await handler(req())).json());
+ let d=await load();
+ const find=(p:string,c:number)=>d.rows.find((t:any)=>t.payee===p&&t.cents===c&&t.date.startsWith('2026-12'));
+ const art=()=>d.insights.contributions.owners.find((o:any)=>o.owner==='Art');
+ const e88=()=>art().entries.find((x:any)=>x.amount===88), e40=()=>art().entries.find((x:any)=>x.amount===40);
+ assert.equal(e88().type,'deposited');assert.equal(e88().source,'auto');assert.equal(e40().type,'paid');
+ assert.deepEqual(e88().candidates.map((c:any)=>c.payee),['Slack']);
+ // re-point the $88 deposit as owner paid for the Slack charge
+ let r=await handler(req({action:'contrib-type',id:e88().id,type:'paid',expenseId:find('Slack',-8800).id}));assert.equal(r.status,200);
+ d=await load();assert.equal(e88().type,'paid');assert.equal(e88().source,'manual');assert.equal(e88().vendor,'Slack');assert.equal(find('Slack',-8800).excludeFromCash,true);
+ // the auto-paired $40 is really a deposit
+ r=await handler(req({action:'contrib-type',id:e40().id,type:'deposited'}));d=await load();
+ assert.equal(e40().type,'deposited');assert.equal(find('Notion',-4000).pairId,null);
+ // wrong amount and non-contribution rows are refused; paid with no Relay charge keeps a note
+ assert.equal((await handler(req({action:'contrib-type',id:e40().id,type:'paid',expenseId:find('Slack',-8800).id}))).status,400);
+ assert.equal((await handler(req({action:'contrib-type',id:find('Slack',-8800).id,type:'paid'}))).status,400);
+ await handler(req({action:'contrib-type',id:e40().id,type:'paid',note:'Notion annual'}));d=await load();
+ assert.equal(e40().type,'paid');assert.equal(e40().vendor,'Notion annual');assert.equal(find('Notion',-4000).pairId,null);
+ // reset goes back to the P&L match
+ await handler(req({action:'contrib-type',id:e40().id,type:'auto'}));d=await load();assert.equal(e40().source,'auto');assert.equal(e40().type,'paid');
+});

@@ -1,28 +1,23 @@
 // GET/POST/DELETE /api/deals
 //
-// The Deals tab. GHL is the source of truth for WHERE a deal is - its stage
-// in the acquisitions pipeline - and this function pulls that live on every
-// GET. What GHL doesn't track for us (contract price, assignment fee, EMD,
-// buyer, escrow, the fee actually received) lives in one Netlify Blobs
-// record per opportunity id, so it survives a refresh and is shared by
-// everyone.
+// The Deals tab: closed (won) deals only. GHL is the source of truth for
+// WHICH deals closed and WHEN - every opportunity with status "won" in the
+// acquisitions and retail pipelines, dated by GHL's native close date. What
+// GHL doesn't track (contract price, assignment fee, EMD, buyer, escrow, the
+// fee actually received) lives in one Netlify Blobs record per opportunity
+// id, so it survives a refresh and is shared by everyone.
 //
-// Which pipeline / stages:
-//   - DEALS_PIPELINE_ID (optional env) picks the pipeline by id. Without it,
-//     the pipeline whose stage names best match DEAL_STAGES is used, so it
-//     works without anyone looking up ids.
-//   - DEAL_STAGES (optional env, comma separated, matched by name, case
-//     insensitive) - the stages that count as a live deal. Default:
-//     "Verbal Acceptance, Offer Sent, Inspection Period, Pending, Closed".
-//   - The stage named "Closed" (or CLOSED_STAGE) is the closed column.
+// Which pipelines:
+//   - DEALS_PIPELINE_IDS (optional env, comma separated ids). Without it,
+//     every pipeline whose name contains "acq" or "retail" is used.
 //
 // GET returns:
-//   { pipeline, stages: [{ id, name, isDeal, isClosed, count }], deals: [row],
-//     fellOut: [row], truncated, fetchedAt }
-// where `deals` are opportunities sitting in a deal stage right now and
-// `fellOut` are opportunities that HAVE a deal record but have since moved
-// to a non-deal stage (offer declined, ghosted...) or left the pipeline -
-// kept so earnest money on a cancelled contract never drops off the radar.
+//   { pipelines: [{ id, name, kind, count }], deals: [row], fellOut: [row],
+//     truncated, fetchedAt }
+// where `deals` are won opportunities (row.closedAt / row.closedDate =
+// GHL close date) and `fellOut` are deal records whose opportunity is no
+// longer won (reopened, lost) or no longer in those pipelines - kept so
+// earnest money on a cancelled contract never drops off the radar.
 //
 // POST { opportunityId, ...fields } upserts a deal record (partial update).
 // DELETE ?opportunityId= removes a record (the GHL opportunity is untouched).
@@ -45,29 +40,40 @@ import { logActivity, money } from "./lib/activity.mts";
 
 type DealMap = Record<string, DealRecord>;
 
-const DEFAULT_DEAL_STAGES = ["Verbal Acceptance", "Offer Sent", "Inspection Period", "Pending", "Closed"];
 const norm = (s: string) => String(s || "").trim().toLowerCase().replace(/\s+/g, " ");
 
-function dealStageNames(): string[] {
-  const raw = process.env.DEAL_STAGES;
-  const list = raw ? raw.split(",").map((s) => s.trim()).filter(Boolean) : DEFAULT_DEAL_STAGES;
-  return list.length ? list : DEFAULT_DEAL_STAGES;
-}
-function closedStageName(): string {
-  return process.env.CLOSED_STAGE || "Closed";
+type DealPipeline = GhlPipeline & { kind: "acquisitions" | "retail" | "other" };
+
+function pipelineKind(name: string): DealPipeline["kind"] {
+  const n = norm(name);
+  if (/\bacq/.test(n)) return "acquisitions";
+  if (/retail/.test(n)) return "retail";
+  return "other";
 }
 
-function pickPipeline(pipelines: GhlPipeline[], wanted: string[]): GhlPipeline | null {
-  const byId = process.env.DEALS_PIPELINE_ID;
-  if (byId) return pipelines.find((p) => p.id === byId) || null;
-  const want = new Set(wanted.map(norm));
-  let best: GhlPipeline | null = null;
-  let bestScore = 0;
-  for (const p of pipelines) {
-    const score = p.stages.filter((st) => want.has(norm(st.name))).length;
-    if (score > bestScore) { best = p; bestScore = score; }
+function pickPipelines(pipelines: GhlPipeline[]): DealPipeline[] {
+  const ids = String(process.env.DEALS_PIPELINE_IDS || process.env.DEALS_PIPELINE_ID || "")
+    .split(",").map((s) => s.trim()).filter(Boolean);
+  const chosen = ids.length
+    ? pipelines.filter((p) => ids.includes(p.id))
+    : pipelines.filter((p) => pipelineKind(p.name) !== "other");
+  return chosen.map((p) => ({ ...p, kind: pipelineKind(p.name) }));
+}
+
+// GHL's native close date for a won opportunity. Field names differ between
+// API versions, so check the known ones, then fall back to the moment the
+// status last changed (which is when it was marked won).
+const CLOSE_FIELDS = ["closedDate", "closeDate", "dateClosed", "closedAt", "wonAt", "lastStatusChangeAt"] as const;
+export function closeDateOf(opp: any): { at: string | null; field: string | null } {
+  for (const f of CLOSE_FIELDS) {
+    const v = opp?.[f];
+    if (v && !Number.isNaN(Date.parse(v))) return { at: new Date(v).toISOString(), field: f };
   }
-  return best;
+  return { at: null, field: null };
+}
+function laDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
 }
 
 function contactName(opp: any): string {
@@ -75,17 +81,24 @@ function contactName(opp: any): string {
   return c.name || [c.firstName, c.lastName].filter(Boolean).join(" ") || c.companyName || "";
 }
 
-function toRow(opp: any, stageName: string, locationId: string, record: DealRecord | null) {
+function toRow(opp: any, pipeline: DealPipeline | null, stageName: string, locationId: string, record: DealRecord | null) {
+  const close = closeDateOf(opp);
   return {
     id: opp.id,
     name: opp.name || record?.propertyAddress || "Untitled deal",
     contactName: contactName(opp) || record?.sellerName || "",
     contactId: opp.contactId || opp.contact?.id || null,
+    pipelineId: pipeline?.id || opp.pipelineId || null,
+    pipelineName: pipeline?.name || "",
+    pipelineKind: pipeline?.kind || "other",
     stageId: opp.pipelineStageId || null,
     stageName,
     status: opp.status || null,
     monetaryValue: Number(opp.monetaryValue) || 0,
     source: opp.source || null,
+    closedAt: close.at,
+    closedDate: laDate(close.at),
+    closedField: close.field,
     lastStageChangeAt: opp.lastStageChangeAt || opp.updatedAt || opp.createdAt || null,
     createdAt: opp.createdAt || null,
     locationId,
@@ -168,54 +181,53 @@ export default async (req: Request) => {
       return json({ error: "Missing GHL_PIT_TOKEN or GHL_LOCATION_ID environment variable" }, 500);
     }
     try {
-      const wanted = dealStageNames();
-      const [pipelines, records] = await Promise.all([fetchPipelines(token, locationId), readDeals()]);
-      const pipeline = pickPipeline(pipelines, wanted);
-      if (!pipeline) {
+      const [allPipelines, records] = await Promise.all([fetchPipelines(token, locationId), readDeals()]);
+      const pipelines = pickPipelines(allPipelines);
+      if (!pipelines.length) {
         return json({
-          error: process.env.DEALS_PIPELINE_ID
-            ? `No pipeline with id ${process.env.DEALS_PIPELINE_ID} in this location`
-            : `Couldn't find a pipeline with stages named ${wanted.join(", ")} - set DEALS_PIPELINE_ID / DEAL_STAGES in Netlify`,
-          pipelines: pipelines.map((p) => ({ id: p.id, name: p.name, stages: p.stages.map((s) => s.name) })),
+          error: process.env.DEALS_PIPELINE_IDS || process.env.DEALS_PIPELINE_ID
+            ? "None of the DEALS_PIPELINE_IDS were found in this location"
+            : "Couldn't find an acquisitions or retail pipeline - set DEALS_PIPELINE_IDS in Netlify",
+          pipelines: allPipelines.map((p) => ({ id: p.id, name: p.name })),
         }, 404);
       }
-      const want = new Set(wanted.map(norm));
-      const closedName = norm(closedStageName());
-      const stageById: Record<string, { name: string; isDeal: boolean }> = {};
-      pipeline.stages.forEach((st) => { stageById[st.id] = { name: st.name, isDeal: want.has(norm(st.name)) }; });
 
-      const { opportunities, truncated } = await fetchAllOpportunities(token, locationId, { pipelineId: pipeline.id, status: "all" });
+      const results = await Promise.all(pipelines.map((p) =>
+        fetchAllOpportunities(token, locationId, { pipelineId: p.id, status: "won" })));
+      const stageName: Record<string, string> = {};
+      pipelines.forEach((p) => p.stages.forEach((st) => { stageName[st.id] = st.name; }));
 
-      const counts: Record<string, number> = {};
       const deals: any[] = [];
       const seen = new Set<string>();
-      for (const opp of opportunities) {
-        const st = stageById[opp.pipelineStageId];
-        counts[opp.pipelineStageId] = (counts[opp.pipelineStageId] || 0) + 1;
-        seen.add(opp.id);
-        if (st && st.isDeal) deals.push(toRow(opp, st.name, locationId, records[opp.id] || null));
-      }
-      // Deals with a record that are no longer in a deal stage.
+      let truncated = false;
+      const counts: Record<string, number> = {};
+      results.forEach((r, i) => {
+        const p = pipelines[i];
+        truncated = truncated || r.truncated;
+        for (const opp of r.opportunities) {
+          if (String(opp.status || "").toLowerCase() !== "won" || seen.has(opp.id)) continue;
+          seen.add(opp.id);
+          counts[p.id] = (counts[p.id] || 0) + 1;
+          deals.push(toRow(opp, p, stageName[opp.pipelineStageId] || "", locationId, records[opp.id] || null));
+        }
+      });
+      deals.sort((a, b) => String(b.closedAt || "").localeCompare(String(a.closedAt || "")));
+
+      // Saved deal records whose opportunity isn't a won deal any more.
       const fellOut: any[] = [];
-      for (const opp of opportunities) {
-        const st = stageById[opp.pipelineStageId];
-        if (records[opp.id] && !(st && st.isDeal)) fellOut.push(toRow(opp, st ? st.name : "Unknown stage", locationId, records[opp.id]));
-      }
       for (const id of Object.keys(records)) {
         if (seen.has(id)) continue;
         const r = records[id];
         fellOut.push({
-          id, name: r.propertyAddress || "Deal no longer in GHL", contactName: r.sellerName || "", contactId: null,
-          stageId: null, stageName: "Not in pipeline", status: null, monetaryValue: 0, source: null,
+          id, name: r.propertyAddress || "Deal no longer won in GHL", contactName: r.sellerName || "", contactId: null,
+          pipelineId: null, pipelineName: "", pipelineKind: "other", stageId: null, stageName: "Not won",
+          status: null, monetaryValue: 0, source: null, closedAt: null, closedDate: "", closedField: null,
           lastStageChangeAt: null, createdAt: r.createdAt, locationId, record: r,
         });
       }
 
       return json({
-        pipeline: { id: pipeline.id, name: pipeline.name },
-        stages: pipeline.stages.map((st) => ({
-          id: st.id, name: st.name, isDeal: want.has(norm(st.name)), isClosed: norm(st.name) === closedName, count: counts[st.id] || 0,
-        })),
+        pipelines: pipelines.map((p) => ({ id: p.id, name: p.name, kind: p.kind, count: counts[p.id] || 0 })),
         deals,
         fellOut,
         truncated,

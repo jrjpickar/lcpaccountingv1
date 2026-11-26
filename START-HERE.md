@@ -4,9 +4,9 @@ Built from Jesse's A2Z Ledger, so setup works the same way. It has the same GHL
 sign-in, the same access list and roles, and the same Bills, Recurring and
 Reports engine. What changed for wholesaling:
 
-- **Deals tab** (replaces Invoices). The deal stages are pulled live from GHL by
-  name: Verbal Acceptance → Offer Sent → Inspection Period → Pending → Closed.
-  Click a card to enter the contract price, assignment fee, EMD, buyer, escrow,
+- **Deals tab** (replaces Invoices). Won deals from the Acquisitions and Retail
+  pipelines, pulled live from GHL and dated by the GHL close date.
+  Click a deal to enter the contract price, assignment fee, EMD, buyer, escrow,
   and the fee actually received.
 - **Partners tab** (replaces BBSI payroll). Tracks the ownership split, capital
   contributions and distributions, and estimates each partner's share of net.
@@ -38,12 +38,11 @@ functions `netlify/functions` (already set in `netlify.toml`).
 | `LEDGER_AUTH_SECRET` | Optional | Session-signing secret, at least 32 characters (recommend 64 random hex characters). Same value in Functions and Edge Functions. Otherwise generated in Blobs with strongly consistent reads. Changing it signs everyone out. |
 | `LEDGER_PASSWORD` | Optional | 12–256 characters. Outside-GHL password; takes precedence over LEDGER_PIN. Listed email required; user level only. |
 | `LEDGER_PIN` | Optional | 4-12 digits. Lets listed people sign in outside GHL (user level only) |
-| `DEALS_PIPELINE_ID` | Optional | Only needed if the pipeline isn't found automatically |
-| `DEAL_STAGES` | Optional | Comma-separated stage names. Default: `Verbal Acceptance,Offer Sent,Inspection Period,Pending,Closed` |
-| `CLOSED_STAGE` | Optional | Defaults to `Closed` |
+| `DEALS_PIPELINE_IDS` | Optional | Comma-separated pipeline ids for the Deals tab. Default: every pipeline with "acq" or "retail" in its name |
 
-If a GHL stage gets renamed, update `DEAL_STAGES`. If the pipeline isn't found,
-the Deals tab lists the pipelines it did find.
+The Deals tab shows only opportunities marked Won in those pipelines, dated by
+the GHL close date. If no pipeline matches, the Deals tab lists the pipelines it
+did find.
 
 ## 4. First run
 1. Open the Ledger from the GHL left menu. You're signed in as senior admin.

@@ -187,7 +187,7 @@ test("bills record who did what", async () => {
   assert.ok(log.includes("Bryce: Approved bill: Home Depot #77 · $512.00"));
 });
 
-test("deals: live GHL pipeline by stage name + saved deal records", async () => {
+test("deals: won deals from GHL + saved deal records", async () => {
   const j = (await ghlSignIn("g-bryce", "brycetooley@gmail.com", "Bryce")).body.token;
   process.env.GHL_PIT_TOKEN = "pit"; process.env.GHL_LOCATION_ID = "LOC123";
   const realFetch = globalThis.fetch;
@@ -200,9 +200,7 @@ test("deals: live GHL pipeline by stage name + saved deal records", async () => 
     if (u.includes("/opportunities/search")) {
       assert.match(u, /pipeline_id=P_acq/);
       return new Response(JSON.stringify({ opportunities: [
-        { id: "o1", name: "1233 E 76th St", pipelineStageId: "s0", contact: { name: "Seller A" } },
-        { id: "o2", name: "1306 57th", pipelineStageId: "s3", contact: { name: "Seller B" }, monetaryValue: 0 },
-        { id: "o3", name: "313 Arbor Vitae", pipelineStageId: "s7", contact: { name: "Seller C" } },
+        { id: "o2", name: "1306 57th", pipelineStageId: "s6", status: "won", lastStatusChangeAt: "2026-11-02T20:00:00Z", contact: { name: "Seller B" }, monetaryValue: 0 },
       ] }));
     }
     throw new Error("unexpected fetch " + u);
@@ -217,11 +215,10 @@ test("deals: live GHL pipeline by stage name + saved deal records", async () => 
     assert.equal(rec.assignmentFee, 15000);
     assert.match(rec.history[0].note, /Assignment fee: blank → \$15000.00/);
     const data = await (await get(deals, "/api/deals", j)).json();
-    assert.equal(data.pipeline.id, "P_acq");
-    assert.deepEqual(data.deals.map((d: any) => [d.id, d.stageName]), [["o2", "Offer Sent"]]);
+    assert.deepEqual(data.pipelines.map((p: any) => p.id), ["P_acq"]);
+    assert.deepEqual(data.deals.map((d: any) => [d.id, d.stageName, d.closedDate]), [["o2", "Closed", "2026-11-02"]]);
     assert.equal(data.deals[0].record.emdStatus, "held");
-    assert.deepEqual(data.fellOut.map((d: any) => [d.id, d.stageName]), [["o3", "Offer Declined- Hot"]]);
-    assert.equal(data.stages.find((s: any) => s.name === "Closed").isClosed, true);
+    assert.deepEqual(data.fellOut.map((d: any) => [d.id, d.stageName]), [["o3", "Not won"]]);
   } finally {
     globalThis.fetch = realFetch;
   }

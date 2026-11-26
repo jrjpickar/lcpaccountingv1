@@ -29,6 +29,17 @@ import {
 import { requireAuth, actorName, currentUser } from "./lib/auth-guard.mts";
 import { atLeast } from "../shared/auth.ts";
 import { logActivity, money } from "./lib/activity.mts";
+import { loadBankState, classifiedRows } from "./lib/bank-state.mts";
+import { relayCapital, reconcileCapital, ownerForMember } from "./lib/partner-reconcile.mts";
+
+// GET (and every write) answers with the ledger reconciled against Relay.
+async function withReconcile(d: PartnersData) {
+  let relay: any[] = [], relayError: string | null = null;
+  try { relay = relayCapital(classifiedRows(await loadBankState()), d.members); }
+  catch (err: any) { relayError = String(err?.message || err); }
+  const r = reconcileCapital(d.members, d.entries, relay);
+  return { ...d, members: d.members.map((m) => ({ ...m, bankOwner: ownerForMember(m) })), ...r, relayError };
+}
 
 function normalize(data: any): PartnersData {
   if (!data || typeof data !== "object" || !Array.isArray(data.members)) return structuredClone(DEFAULT_PARTNERS);
@@ -43,7 +54,7 @@ export default async (req: Request) => {
 
   if (req.method === "GET") {
     const data = await getStore(PARTNERS_STORE).get(PARTNERS_KEY, { type: "json" });
-    return json(normalize(data));
+    return json(await withReconcile(normalize(data)));
   }
 
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
@@ -76,7 +87,7 @@ export default async (req: Request) => {
       });
       logAction = type === "contribution" ? "Recorded capital contribution" : "Recorded distribution";
       await logActivity(req, logAction, logLine);
-      return json(normalize(result), 201);
+      return json(await withReconcile(normalize(result)), 201);
     }
 
     if (action === "delete-entry") {
@@ -90,7 +101,31 @@ export default async (req: Request) => {
         return { members: d.members, entries: d.entries.filter((x) => x.id !== id) };
       });
       await logActivity(req, "Deleted partner entry", logLine);
-      return json(normalize(result));
+      return json(await withReconcile(normalize(result)));
+    }
+
+    if (action === "update-entry") {
+      // Edit a Partners entry, and/or how it reconciles with Relay:
+      // relayId null = auto-match, "" = not in Relay, an id = link to that row.
+      const id = String(body.id || "");
+      const result = await transactBlobJSON<PartnersData>(PARTNERS_STORE, PARTNERS_KEY, structuredClone(DEFAULT_PARTNERS), (cur) => {
+        const d = normalize(cur);
+        const e = d.entries.find((x) => x.id === id);
+        if (!e) throw new HttpError(404, "Entry not found");
+        const next: PartnerEntry = { ...e };
+        if ("memberId" in body) { if (!d.members.some((m) => m.id === body.memberId)) throw new HttpError(400, "Pick a partner"); next.memberId = body.memberId; }
+        if ("type" in body) { if (body.type !== "contribution" && body.type !== "distribution") throw new HttpError(400, "type must be contribution or distribution"); next.type = body.type; }
+        if ("amount" in body) { const a = Math.round(Number(String(body.amount ?? "").replace(/[$,\s]/g, "")) * 100) / 100; if (!(a > 0)) throw new HttpError(400, "amount must be more than 0"); next.amount = a; }
+        if ("date" in body) { const dt = String(body.date || "").slice(0, 10); if (!/^\d{4}-\d{2}-\d{2}$/.test(dt)) throw new HttpError(400, "date must be YYYY-MM-DD"); next.date = dt; }
+        if ("note" in body) next.note = String(body.note || "").slice(0, 300);
+        if ("relayId" in body) { if (body.relayId === null || body.relayId === undefined) delete next.relayId; else next.relayId = String(body.relayId).slice(0, 100); }
+        next.updatedAt = new Date().toISOString(); next.updatedBy = actorName(req);
+        const m = d.members.find((x) => x.id === next.memberId);
+        logLine = `${m ? m.name : next.memberId} · ${next.type} · ${money(next.amount)} on ${next.date}` + ("relayId" in body ? (next.relayId === undefined ? " · auto-match Relay" : next.relayId ? " · linked to Relay" : " · not in Relay") : "");
+        return { members: d.members, entries: d.entries.map((x) => (x.id === id ? next : x)) };
+      });
+      await logActivity(req, "Edited partner entry", logLine);
+      return json(await withReconcile(normalize(result)));
     }
 
     if (action === "set-members") {
@@ -117,7 +152,7 @@ export default async (req: Request) => {
         return { members, entries: d.entries };
       });
       await logActivity(req, "Updated partners", members.map((m) => `${m.name} ${m.pct == null ? "?" : m.pct + "%"}`).join(", "));
-      return json(normalize(result));
+      return json(await withReconcile(normalize(result)));
     }
   } catch (err: any) {
     const status = err instanceof HttpError ? err.status : 500;

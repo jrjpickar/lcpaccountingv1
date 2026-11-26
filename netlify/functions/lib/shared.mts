@@ -360,6 +360,11 @@ export type PartnerEntry = {
   note: string;
   createdAt: string;
   createdBy?: string;
+  // Relay reconciliation: unset = auto-match, a Relay row id = linked by hand,
+  // "" = never matched (money that didn't go through Relay).
+  relayId?: string;
+  updatedAt?: string;
+  updatedBy?: string;
 };
 export type PartnersData = { members: PartnerMember[]; entries: PartnerEntry[] };
 export const DEFAULT_PARTNERS: PartnersData = {

@@ -999,6 +999,17 @@
   .partner-card .bad-ink{color:var(--overdue-ink)}
   .split-warn{font-size:13px; font-weight:600; color:var(--sent-ink); background:var(--sent-bg); padding:9px 12px; border-radius:10px; margin:0 0 14px}
   .partner-table td.wrap{white-space:normal; min-width:200px}
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+  .pc-recon{font-size:11.5px; font-weight:700; color:var(--muted); margin-top:8px; padding-top:8px; border-top:1px solid var(--line)}
+  .rc-badge{font-size:11px; font-weight:800; padding:3px 8px; border-radius:100px; white-space:nowrap; display:inline-block}
+  .rc-badge.matched{background:var(--paid-bg); color:var(--paid-ink)}
+  .rc-badge.relay{background:var(--blue-soft); color:var(--blue)}
+  .rc-badge.manual{background:var(--sent-bg); color:var(--sent-ink)}
+  .rc-badge.unassigned{background:var(--overdue-bg); color:var(--overdue-ink)}
+  .rc-sub{display:block; font-size:12px; color:var(--muted); font-weight:600; margin-top:3px; white-space:normal}
+  .unassigned-bar{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:12px 16px; border-radius:12px; background:var(--overdue-bg); color:var(--overdue-ink); font-weight:700; font-size:13.5px; margin:16px 0 0}
+  .partner-table select{font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--line-strong); border-radius:8px; background:var(--surface); color:var(--ink)}
+  .pt-actions{display:flex; gap:6px; justify-content:flex-end; white-space:nowrap}
 
   @media (max-width: 900px){
     main{padding:20px 16px 48px}
@@ -1194,14 +1205,19 @@
     <p class="split-warn" id="partners-split-warn" hidden></p>
     <div class="partner-grid" id="partner-cards"></div>
 
-    <h3 class="report-h" style="margin-top:26px">Capital ledger</h3>
+    <div class="unassigned-bar" id="partners-unassigned" hidden></div>
+
+    <div class="controls" style="margin-top:22px">
+      <h3 class="report-h" style="margin:0">Capital ledger</h3>
+      <div class="deal-chips" id="partner-filter-chips"></div>
+    </div>
     <div class="scrollx">
       <table class="exp-table partner-table">
-        <thead><tr><th>Date</th><th>Partner</th><th>Type</th><th class="num">Amount</th><th>Note</th><th>Entered by</th><th></th></tr></thead>
+        <thead><tr><th>Date</th><th>Partner</th><th>Type</th><th class="num">Amount</th><th>Relay</th><th>Note</th><th></th></tr></thead>
         <tbody id="partner-rows"><tr><td colspan="7" class="empty-row">Loading…</td></tr></tbody>
       </table>
     </div>
-    <p class="demo-note"><span class="pip"></span> <span id="partners-note-text">Contributions and distributions are capital, not income or expenses, so they never change the P&amp;L. Share of net is ownership % × this year's net, a planning estimate. Your CPA's K-1 is the real number.</span></p>
+    <p class="demo-note"><span class="pip"></span> <span id="partners-note-text">Capital reconciles against Relay automatically: Owner contribution and Owner distribution rows on Bank &amp; P&amp;L count for the partner they belong to, and a Partners entry with the same partner, type and amount within 7 days is matched to it so it counts once. Contributions and distributions are capital, not income or expenses, so they never change the P&amp;L. Share of net is ownership % × this year's net, a planning estimate. Your CPA's K-1 is the real number.</span></p>
   </section>
 
   <section class="view" id="view-reports">
@@ -1312,9 +1328,9 @@
       <p id="bank-preview-result" role="status" style="margin:14px 0 0">Preview the files before importing.</p>
     </div>
     <div class="access-card"><h3>Review transactions</h3><p class="access-sub">Search and review-only controls affect the transaction list. Financial metrics follow the account, currency and date filters above. Confirm suggested categories with the checkboxes or change a row's category to save it.</p>
-      <div class="access-add"><input id="bank-search" class="access-input" placeholder="Search payee or reference" aria-label="Search transactions"><label><input type="checkbox" id="bank-review"> Needs review only</label><select id="bank-bulk-category" class="access-input" aria-label="Category for selected rows"></select><button id="bank-apply" class="btn">Set selected category</button><button id="bank-confirm" class="btn">Confirm selected suggestions</button></div>
-      <p id="bank-message" role="status"></p><p id="bank-count" class="access-sub"></p>
-      <div class="access-table-wrap"><table class="access-table"><thead><tr><th>Select</th><th>Date</th><th>Account</th><th>Payee / reference</th><th>Status</th><th>Amount</th><th>Category</th><th>Partner</th></tr></thead><tbody id="bank-table"></tbody></table></div><button id="bank-more" class="btn" hidden>Show more</button>
+      <div class="access-add"><input id="bank-search" class="access-input" placeholder="Search payee or reference" aria-label="Search transactions"><label><input type="checkbox" id="bank-review"> Needs review only</label><select id="bank-bulk-category" class="access-input" aria-label="Category for selected rows"></select><button id="bank-apply" class="btn">Set selected category</button><button id="bank-confirm" class="btn">Confirm selected suggestions</button><button id="bank-delete-selected" class="btn bank-admin-only" style="color:var(--overdue-ink)">Delete selected</button></div>
+      <p id="bank-message" role="status"></p><p id="bank-count" class="access-sub"></p><details id="bank-deleted-wrap" hidden style="margin:0 0 12px"><summary style="cursor:pointer;color:var(--muted);font-weight:700" id="bank-deleted-label">Deleted transactions</summary><div class="access-table-wrap"><table class="access-table"><thead><tr><th>Date</th><th>Account</th><th>Payee / reference</th><th>Amount</th><th>Deleted</th><th></th></tr></thead><tbody id="bank-deleted"></tbody></table></div></details>
+      <div class="access-table-wrap"><table class="access-table"><thead><tr><th>Select</th><th>Date</th><th>Account</th><th>Payee / reference</th><th>Status</th><th>Amount</th><th>Category</th><th>Partner</th><th class="bank-admin-only"><span class="sr-only">Delete</span></th></tr></thead><tbody id="bank-table"></tbody></table></div><button id="bank-more" class="btn" hidden>Show more</button>
     </div>
   </section>
 
@@ -3046,19 +3062,21 @@
   var recurringTemplatesCache = [];
 
   /* ---------- Partners: capital contributions & distributions (/api/partners) ---------- */
-  var partnersData = { members: [], entries: [] };
+  var partnersData = { members: [], entries: [], lines: [] };
+  var partnerFilter = 'all';
+  window.refreshPartners = function(){ return fetchPartners(); };
   var partnersLoaded = false;
 
   function fetchPartners(){
     return fetch('/api/partners').then(function(res){ return res.json().then(function(d){ if (!res.ok) throw new Error(d.error || res.status); return d; }); })
-      .then(function(d){ partnersData = { members: d.members || [], entries: d.entries || [] }; partnersLoaded = true; })
+      .then(function(d){ partnersData = Object.assign({ members: [], entries: [], lines: [] }, d); partnersLoaded = true; })
       .catch(function(err){ partnersLoaded = true; var n = document.getElementById('partners-note-text'); if (n) n.textContent = 'Couldn\'t load /api/partners: ' + err.message; })
       .then(function(){ renderPartnersTab(); renderReportsDashboard(); });
   }
   function partnersPost(body){
     return fetch('/api/partners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
       .then(function(res){ return res.json().then(function(d){ if (!res.ok) throw new Error(d.error || ('Request failed (' + res.status + ')')); return d; }); })
-      .then(function(d){ partnersData = { members: d.members || [], entries: d.entries || [] }; renderPartnersTab(); renderReportsDashboard(); return d; });
+      .then(function(d){ partnersData = Object.assign({ members: [], entries: [], lines: [] }, d); renderPartnersTab(); renderReportsDashboard(); return d; });
   }
 
   // Per-partner totals. Profit share = ownership % x YTD net (an estimate for
@@ -3067,9 +3085,10 @@
     var y = ytdRollforward();
     var net = y.totals.netIncome;
     return partnersData.members.map(function(m){
-      var c = 0, d = 0;
-      partnersData.entries.forEach(function(e){ if (e.memberId !== m.id) return; if (e.type === 'contribution') c += e.amount; else d += e.amount; });
-      return { member: m, contributed: c, distributed: d, net: c - d, profitShare: m.pct == null ? null : net * m.pct / 100 };
+      var t = partnersData.totals && partnersData.totals[m.id], c = 0, d = 0;
+      if (t) { c = t.contributed; d = t.distributed; }
+      else partnersData.entries.forEach(function(e){ if (e.memberId !== m.id) return; if (e.type === 'contribution') c += e.amount; else d += e.amount; });
+      return { member: m, contributed: c, distributed: d, net: c - d, profitShare: m.pct == null ? null : net * m.pct / 100, recon: t || null };
     });
   }
 
@@ -3095,6 +3114,7 @@
         '<div class="kv"><span class="k">Taken out</span><span class="v">' + money(p.distributed) + '</span></div>' +
         '<div class="kv"><span class="k">Net capital</span><span class="v amount">' + money(p.net) + '</span></div>' +
         '<div class="kv"><span class="k">Share of ' + esc(String(y.year)) + ' net</span><span class="v ' + (p.profitShare == null ? '' : p.profitShare >= 0 ? 'good-ink' : 'bad-ink') + '">' + (p.profitShare == null ? '-' : money(p.profitShare)) + '</span></div>' +
+        (p.recon ? '<div class="pc-recon">' + p.recon.matched + ' reconciled · ' + p.recon.fromRelay + ' from Relay only · ' + p.recon.manualOnly + ' Partners only</div>' : '') +
       '</div>';
     }).join('');
     var warn = document.getElementById('partners-split-warn');
@@ -3108,20 +3128,55 @@
 
     var byId = {};
     partnersData.members.forEach(function(m){ byId[m.id] = m.name; });
-    var entries = partnersData.entries.slice().sort(function(a, b){ return a.date < b.date ? 1 : a.date > b.date ? -1 : (a.createdAt < b.createdAt ? 1 : -1); });
-    rowsEl.innerHTML = entries.length ? entries.map(function(e){
-      return '<tr><td>' + esc(e.date) + '</td><td class="strong">' + esc(byId[e.memberId] || e.memberId) + '</td>' +
-        '<td><span class="status-badge ' + (e.type === 'contribution' ? 'paid' : 'approved') + '">' + (e.type === 'contribution' ? 'Contribution' : 'Distribution') + '</span></td>' +
-        '<td class="num amount">' + (e.type === 'distribution' ? '-' : '') + money(e.amount) + '</td>' +
-        '<td class="wrap">' + esc(e.note || '') + '</td><td>' + esc(e.createdBy || '') + '</td>' +
-        '<td><button type="button" class="li-remove" data-entry-id="' + esc(e.id) + '" title="Delete this entry" aria-label="Delete entry">×</button></td></tr>';
-    }).join('') : '<tr><td colspan="7" class="empty-row">Nothing recorded yet. Use "+ Partner entry" for money a partner put in or took out.</td></tr>';
-    var tc = 0, td = 0; partnersData.entries.forEach(function(e){ if (e.type === 'contribution') tc += e.amount; else td += e.amount; });
+    var lines = partnersData.lines || [];
+    var FILTERS = [['all', 'All'], ['matched', 'Reconciled'], ['relay', 'Relay only'], ['manual', 'Partners only'], ['unassigned', 'No partner']];
+    function inFilter(l){ return partnerFilter === 'all' ? true : partnerFilter === 'unassigned' ? !l.memberId : l.kind === partnerFilter && !!l.memberId; }
+    var chipsEl = document.getElementById('partner-filter-chips');
+    if (chipsEl) chipsEl.innerHTML = FILTERS.map(function(f){
+      var n = lines.filter(function(l){ var keep = partnerFilter; partnerFilter = f[0]; var ok = inFilter(l); partnerFilter = keep; return ok; }).length;
+      return '<button type="button" class="deal-chip' + (partnerFilter === f[0] ? ' on' : '') + '" data-pfilter="' + f[0] + '">' + f[1] + '<span class="n">' + n + '</span></button>';
+    }).join('');
+    var ownerOpts = function(sel){ return '<option value="">No partner</option>' + partnersData.members.filter(function(m){ return m.bankOwner; }).map(function(m){ return '<option value="' + esc(m.bankOwner) + '"' + (m.bankOwner === sel ? ' selected' : '') + '>' + esc(m.name) + '</option>'; }).join(''); };
+    var shown = lines.filter(inFilter);
+    rowsEl.innerHTML = shown.length ? shown.map(function(l){
+      var e = l.entry, r = l.relay;
+      var badge = !l.memberId ? '<span class="rc-badge unassigned">No partner</span>'
+        : l.kind === 'matched' ? '<span class="rc-badge matched">Reconciled' + (l.link === 'manual' ? ' · linked' : '') + '</span>'
+        : l.kind === 'relay' ? '<span class="rc-badge relay">From Relay</span>' : '<span class="rc-badge manual">' + (e && e.relayId === '' ? 'Not in Relay' : 'No Relay match') + '</span>';
+      var relayTxt = r ? '<span class="rc-sub">' + esc(niceDate(r.date)) + ' · ' + esc(r.payee) + ' · ••' + esc(r.account) + (r.vendor ? ' · owner paid ' + esc(r.vendor) : '') + '</span>' : '';
+      if (l.amountDiff) relayTxt += '<span class="rc-sub" style="color:var(--sent-ink)">Partners entry says ' + money(e.amount) + ' (' + (l.amountDiff > 0 ? '+' : '') + money(l.amountDiff) + ' in Relay)</span>';
+      var partnerCell = e ? '<span class="strong">' + esc(byId[l.memberId] || l.memberId) + '</span>'
+        : '<select data-relay-owner="' + esc(r.id) + '" aria-label="Partner for this Relay row">' + ownerOpts(r.owner) + '</select>';
+      var note = e ? esc(e.note || '') + (e.updatedBy ? '<span class="rc-sub">Edited by ' + esc(e.updatedBy) + '</span>' : e.createdBy ? '<span class="rc-sub">Entered by ' + esc(e.createdBy) + '</span>' : '') : '<span class="rc-sub" style="margin:0">' + esc(r.reference) + '</span>';
+      var actions = e ? '<button type="button" class="btn" style="padding:5px 10px" data-edit-entry="' + esc(e.id) + '">Edit</button><button type="button" class="li-remove" data-entry-id="' + esc(e.id) + '" title="Delete this Partners entry" aria-label="Delete entry">×</button>'
+        : '<button type="button" class="btn" style="padding:5px 10px" data-add-from-relay="' + esc(r.id) + '" title="Add a Partners entry for this Relay row, with a note">Add note</button>';
+      return '<tr><td>' + esc(l.date) + '</td><td>' + partnerCell + '</td>' +
+        '<td><span class="status-badge ' + (l.type === 'contribution' ? 'paid' : 'approved') + '">' + (l.type === 'contribution' ? 'Contribution' : 'Distribution') + '</span></td>' +
+        '<td class="num amount">' + (l.type === 'distribution' ? '-' : '') + money(l.amount) + '</td>' +
+        '<td class="wrap">' + badge + relayTxt + '</td><td class="wrap">' + note + '</td><td><div class="pt-actions">' + actions + '</div></td></tr>';
+    }).join('') : '<tr><td colspan="7" class="empty-row">' + (lines.length ? 'Nothing matches this filter.' : 'Nothing recorded yet. Import Relay CSVs on Bank &amp; P&amp;L, or use "+ Contribution".') + '</td></tr>';
+    var un = partnersData.unassigned, unEl = document.getElementById('partners-unassigned');
+    if (unEl) {
+      unEl.hidden = !(un && un.count);
+      if (un && un.count) unEl.innerHTML = '<span>' + money(un.contributed) + ' in and ' + money(un.distributed) + ' out from Relay has no partner (' + un.count + ' row' + (un.count === 1 ? '' : 's') + '). Pick the partner on each row, or set the bank source owner on Bank &amp; P&amp;L.</span><button type="button" class="btn" data-pfilter="unassigned">Show them</button>';
+    }
+    if (partnersData.relayError) { var nt = document.getElementById('partners-note-text'); if (nt) nt.textContent = 'Couldn\'t read Relay for reconciliation: ' + partnersData.relayError; }
+    var tc = 0, td = 0; partnerSummary().forEach(function(p){ tc += p.contributed; td += p.distributed; });
+    if (un) { tc += un.contributed; td += un.distributed; }
     var totEl = document.getElementById('partner-totals');
     if (totEl) totEl.textContent = money(tc) + ' put in · ' + money(td) + ' taken out';
   }
 
-  function openPartnerEntryModal(presetType){
+  function relayChoices(type, current){
+    // Relay rows this entry could reconcile with: unmatched rows of the same type, plus its current link.
+    return (partnersData.lines || []).filter(function(l){ return l.relay && l.type === type && (l.kind === 'relay' || (current && l.relay.id === current)); })
+      .map(function(l){ return l.relay; });
+  }
+  function openPartnerEntryModal(presetType, editId, fromRelayId){
+    var editing = editId ? partnersData.entries.filter(function(x){ return x.id === editId; })[0] : null;
+    var fromRelay = fromRelayId ? (partnersData.lines || []).filter(function(l){ return l.relay && l.relay.id === fromRelayId; })[0] : null;
+    if (editing || fromRelay) return openPartnerEditModal(editing, fromRelay);
+
     if (!partnersData.members.length) { showToast('Add the partners first (Setup → Partners).', true); return; }
     openModal(
       '<h3>Partner entry</h3>' +
@@ -3144,6 +3199,48 @@
       partnersPost({ action: 'add-entry', memberId: document.getElementById('pe-member').value, type: document.getElementById('pe-type').value,
         amount: amount, date: document.getElementById('pe-date').value, note: document.getElementById('pe-note').value })
         .then(function(){ closeModal(); showToast('Entry saved.'); })
+        .catch(function(err){ btn.disabled = false; showToast(err.message, true); });
+    });
+  }
+
+  function openPartnerEditModal(e, fromLine){
+    var r = fromLine ? fromLine.relay : null;
+    var v = e || { memberId: fromLine.memberId || (partnersData.members[0] || {}).id, type: fromLine.type, amount: r.amount, date: r.date, note: '', relayId: r.id };
+    var line = e ? (partnersData.lines || []).filter(function(l){ return l.entry && l.entry.id === e.id; })[0] : fromLine;
+    var linkedId = line && line.relay ? line.relay.id : '';
+    function relayOptions(type){
+      var cur = v.relayId === undefined ? 'auto' : v.relayId === '' ? 'none' : v.relayId;
+      return '<option value="auto"' + (cur === 'auto' ? ' selected' : '') + '>Auto-match with Relay' + (e && line && line.link === 'auto' ? ' (matched now)' : '') + '</option>' +
+        '<option value="none"' + (cur === 'none' ? ' selected' : '') + '>Not in Relay (paid or taken outside the bank)</option>' +
+        relayChoices(type, linkedId).map(function(x){ return '<option value="' + esc(x.id) + '"' + (cur === x.id ? ' selected' : '') + '>Link: ' + esc(niceDate(x.date)) + ' · ' + esc(x.payee) + ' · ' + money(x.amount) + ' · ••' + esc(x.account) + '</option>'; }).join('');
+    }
+    openModal(
+      '<h3>' + (e ? 'Edit partner entry' : 'Partner entry from Relay') + '</h3>' +
+      '<p class="empty-hint">' + (e ? 'Change the entry or how it reconciles with Relay.' : 'Adds a Partners entry linked to this Relay row, so you can keep a note on it. It still counts once.') + '</p>' +
+      '<label for="pe-member">Partner</label><select id="pe-member">' + partnersData.members.map(function(m){ return '<option value="' + esc(m.id) + '"' + (m.id === v.memberId ? ' selected' : '') + '>' + esc(m.name) + '</option>'; }).join('') + '</select>' +
+      '<div class="recur-two-col">' +
+        '<div><label for="pe-type">Type</label><select id="pe-type"><option value="contribution"' + (v.type !== 'distribution' ? ' selected' : '') + '>Contribution (put in)</option><option value="distribution"' + (v.type === 'distribution' ? ' selected' : '') + '>Distribution (taken out)</option></select></div>' +
+        '<div><label for="pe-date">Date</label><input type="date" id="pe-date" value="' + esc(v.date) + '"></div>' +
+      '</div>' +
+      '<label for="pe-amount">Amount</label><input type="text" inputmode="decimal" id="pe-amount" value="' + esc(String(v.amount)) + '">' +
+      '<label for="pe-note">Note</label><input type="text" id="pe-note" value="' + esc(v.note || '') + '" placeholder="e.g. EMD on 1306 57th, Q3 distribution">' +
+      '<label for="pe-relay">Reconcile with Relay</label><select id="pe-relay">' + relayOptions(v.type) + '</select>' +
+      '<div class="modal-actions"><button class="btn" id="modal-cancel-btn" type="button">Cancel</button><button class="btn primary" id="pe-save" type="button">Save</button></div>'
+    );
+    document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+    document.getElementById('pe-type').addEventListener('change', function(){ document.getElementById('pe-relay').innerHTML = relayOptions(this.value); });
+    document.getElementById('pe-save').addEventListener('click', function(){
+      var btn = this;
+      var amount = document.getElementById('pe-amount').value.replace(/[$,\s]/g, '');
+      if (!(Number(amount) > 0)) { showToast('Enter an amount.', true); document.getElementById('pe-amount').focus(); return; }
+      var rv = document.getElementById('pe-relay').value;
+      var fields = { memberId: document.getElementById('pe-member').value, type: document.getElementById('pe-type').value, amount: amount,
+        date: document.getElementById('pe-date').value, note: document.getElementById('pe-note').value, relayId: rv === 'auto' ? null : rv === 'none' ? '' : rv };
+      btn.disabled = true;
+      var go = e ? partnersPost(Object.assign({ action: 'update-entry', id: e.id }, fields))
+        : partnersPost({ action: 'add-entry', memberId: fields.memberId, type: fields.type, amount: amount, date: fields.date, note: fields.note })
+            .then(function(d){ var made = (d.entries || []).slice().sort(function(a, b){ return a.createdAt < b.createdAt ? 1 : -1; })[0]; return made ? partnersPost(Object.assign({ action: 'update-entry', id: made.id }, { relayId: fields.relayId })) : d; });
+      go.then(function(){ closeModal(); showToast(e ? 'Entry updated.' : 'Entry saved.'); })
         .catch(function(err){ btn.disabled = false; showToast(err.message, true); });
     });
   }
@@ -3188,8 +3285,25 @@
     render();
   }
 
+  var partnersViewEl = document.getElementById('view-partners');
+  if (partnersViewEl) partnersViewEl.addEventListener('click', function(e){
+    var f = e.target.closest('[data-pfilter]');
+    if (f) { partnerFilter = f.getAttribute('data-pfilter'); renderPartnersTab(); }
+  });
   var partnerRowsEl = document.getElementById('partner-rows');
+  if (partnerRowsEl) partnerRowsEl.addEventListener('change', function(e){
+    var sel = e.target.closest('[data-relay-owner]'); if (!sel) return;
+    sel.disabled = true;
+    fetch('/api/bank-transactions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'owner', id: sel.getAttribute('data-relay-owner'), owner: sel.value }) })
+      .then(function(res){ return res.json().then(function(d){ if (!res.ok) throw new Error(d.error || res.status); }); })
+      .then(function(){ showToast('Partner saved on the Relay row.'); return window.bankReload ? window.bankReload() : fetchPartners(); })
+      .catch(function(err){ sel.disabled = false; showToast(err.message, true); });
+  });
   if (partnerRowsEl) partnerRowsEl.addEventListener('click', function(e){
+    var ed = e.target.closest('[data-edit-entry]');
+    if (ed) { openPartnerEntryModal(null, ed.getAttribute('data-edit-entry')); return; }
+    var fr = e.target.closest('[data-add-from-relay]');
+    if (fr) { openPartnerEntryModal(null, null, fr.getAttribute('data-add-from-relay')); return; }
     var b = e.target.closest('[data-entry-id]');
     if (!b) return;
     if (!confirm('Delete this partner entry? This cannot be undone.')) return;
@@ -4819,7 +4933,7 @@ $('bank-pl').innerHTML='<table class="access-table"><tbody>'+[['Operating revenu
 renderPeriods(all,fmt);
 $('bank-expenses').innerHTML=expenses.concat(['Cost of revenue']).map(c=>{let total=-all.filter(t=>t.category===c).reduce((s,t)=>s+t.cents,0);return '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>'+c+'</span><b>'+fmt(total)+'</b></div>';}).join('');
 $('bank-count').textContent=list.length+' matching transactions · '+all.length+' in financial scope';
-$('bank-table').innerHTML=list.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,limit).map(t=>'<tr><td><input type="checkbox" class="bank-select" value="'+t.id+'" aria-label="Select transaction"></td><td>'+t.date+'</td><td>••'+esc(t.account)+'</td><td>'+esc(t.payee)+'<span class="sub">'+esc(t.reference||t.description)+'</span><span class="sub">'+esc(t.reason)+'</span></td><td>'+esc(t.status)+'</td><td style="white-space:nowrap">'+fmt(t.cents)+'</td><td><select class="access-input bank-category" data-id="'+t.id+'" aria-label="Transaction category">'+cats.map(c=>'<option'+(c===t.category?' selected':'')+'>'+c+'</option>').join('')+'</select><span class="sub">'+(t.reviewed?(t.classificationSource==='Manual'?'Reviewed':'Classified from CSV'):'Needs review')+'</span></td><td><select class="access-input bank-owner" data-id="'+t.id+'" aria-label="Partner">'+['','Art','Bryce','Jesse'].map(o=>'<option value="'+o+'"'+(o===(t.owner||'')?' selected':'')+'>'+esc(o||'Unassigned')+'</option>').join('')+'</select></td></tr>').join('');$('bank-more').hidden=list.length<=limit;renderVendorCharts();
+$('bank-table').innerHTML=list.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,limit).map(t=>'<tr><td><input type="checkbox" class="bank-select" value="'+t.id+'" aria-label="Select transaction"></td><td>'+t.date+'</td><td>••'+esc(t.account)+'</td><td>'+esc(t.payee)+'<span class="sub">'+esc(t.reference||t.description)+'</span><span class="sub">'+esc(t.reason)+'</span></td><td>'+esc(t.status)+'</td><td style="white-space:nowrap">'+fmt(t.cents)+'</td><td><select class="access-input bank-category" data-id="'+t.id+'" aria-label="Transaction category">'+cats.map(c=>'<option'+(c===t.category?' selected':'')+'>'+c+'</option>').join('')+'</select><span class="sub">'+(t.reviewed?(t.classificationSource==='Manual'?'Reviewed':'Classified from CSV'):'Needs review')+'</span></td><td><select class="access-input bank-owner" data-id="'+t.id+'" aria-label="Partner">'+['','Art','Bryce','Jesse'].map(o=>'<option value="'+o+'"'+(o===(t.owner||'')?' selected':'')+'>'+esc(o||'Unassigned')+'</option>').join('')+'</select></td><td class="bank-admin-only"><button type="button" class="li-remove" data-delete-id="'+t.id+'" title="Delete this transaction" aria-label="Delete transaction '+esc(t.date+' '+t.payee)+'">×</button></td></tr>').join('');$('bank-more').hidden=list.length<=limit;renderDeleted();renderVendorCharts();
 }
 /* ---------- Top line / spend / bottom line by month or quarter, past + projected ----------
    Actual periods come from SETTLED bank rows in the selected scope. The
@@ -4920,14 +5034,30 @@ function renderPeriods(all,fmt){
   :'Projection = average of '+basisTxt+(model.basis.length<model.n?' (only '+model.basis.length+' complete month'+(model.basis.length===1?'':'s')+' available)':'')+(model.skipped?'; '+mLabel(model.skipped)+' is left out because its history starts mid-month':'')+'. '+mLabel(model.cur)+' is in progress: actual to date plus the run-rate for the days left. Wholesale fees are lumpy, so a single closing can swing the top-line run-rate; use "No new revenue" for a spend-only view.';
 }
 $('bank-period-view').onchange=$('bank-period-basis').onchange=$('bank-period-rev').onchange=$('bank-period-ahead').onchange=()=>render();
-async function load(){try{const d=await api();if(window.setBillInsights)window.setBillInsights(d.insights);rows=d.rows;cats=d.categories;$('bank-total-owner').value=d.sources?.['TOTAL CHECKING']||'';$('bank-adv-owner').value=d.sources?.['Adv Plus Banking']||'Art';$('bank-account').innerHTML='<option value="business">Business P&L · Dodger City + LocalCare</option><option value="localcare">LocalCare · expense accounts</option><option value="2910">Dodger City · revenue / profit account</option><option value="partners">Partner payout accounts</option><option value="">All accounts · including partner accounts</option>'+d.accounts.filter(a=>a!=='2910').map(a=>'<option value="'+a+'">'+({'8661':'LocalCare operating · 8661','8662':'LocalCare reserve · 8662','2911':'Bryce allocation · 2911','7503':'Art allocation · 7503','7510':'Jesse allocation · 7510'}[a]||a)+'</option>').join('');$('bank-currency').innerHTML=[...new Set(rows.map(t=>t.currency))].sort().map(c=>'<option>'+c+'</option>').join('');$('bank-bulk-category').innerHTML=cats.map(c=>'<option>'+c+'</option>').join('');render();}catch(e){$('bank-message').textContent=e.message;if(window.setBillInsights)window.setBillInsights(null,e.message);}}
+async function load(){try{const d=await api();if(window.setBillInsights)window.setBillInsights(d.insights);rows=d.rows;deletedRows=d.deleted||[];cats=d.categories;$('bank-total-owner').value=d.sources?.['TOTAL CHECKING']||'';$('bank-adv-owner').value=d.sources?.['Adv Plus Banking']||'Art';$('bank-account').innerHTML='<option value="business">Business P&L · Dodger City + LocalCare</option><option value="localcare">LocalCare · expense accounts</option><option value="2910">Dodger City · revenue / profit account</option><option value="partners">Partner payout accounts</option><option value="">All accounts · including partner accounts</option>'+d.accounts.filter(a=>a!=='2910').map(a=>'<option value="'+a+'">'+({'8661':'LocalCare operating · 8661','8662':'LocalCare reserve · 8662','2911':'Bryce allocation · 2911','7503':'Art allocation · 7503','7510':'Jesse allocation · 7510'}[a]||a)+'</option>').join('');$('bank-currency').innerHTML=[...new Set(rows.map(t=>t.currency))].sort().map(c=>'<option>'+c+'</option>').join('');$('bank-bulk-category').innerHTML=cats.map(c=>'<option>'+c+'</option>').join('');render();}catch(e){$('bank-message').textContent=e.message;if(window.setBillInsights)window.setBillInsights(null,e.message);}}
 async function categorize(ids,category){if(!ids.length){$('bank-message').textContent='Select transactions first.';return;}try{await api({action:'categorize',ids,category});rows.forEach(t=>{if(ids.includes(t.id)){t.category=category;t.reviewed=true;t.classificationSource='Manual';}});render();$('bank-message').textContent='Categories saved.';}catch(e){$('bank-message').textContent=e.message;render();}}
 $('bank-total-owner').onchange=()=>saveSource('TOTAL CHECKING',$('bank-total-owner').value);
 $('bank-adv-owner').onchange=()=>saveSource('Adv Plus Banking',$('bank-adv-owner').value);
 async function saveSource(source,owner){try{await api({action:'source-owner',source,owner});await reloadPreservingFilters();$('bank-message').textContent='Bank-source attribution saved for existing and future imports.';}catch(e){$('bank-message').textContent=e.message;}}
-async function reloadPreservingFilters(){const d=await api();if(window.setBillInsights)window.setBillInsights(d.insights);rows=d.rows;render();}
+async function reloadPreservingFilters(){const d=await api();if(window.setBillInsights)window.setBillInsights(d.insights);rows=d.rows;deletedRows=d.deleted||[];render();if(window.refreshPartners)window.refreshPartners();}
 window.bankReload=reloadPreservingFilters;
 $('bank-table').addEventListener('change',async e=>{if(e.target.classList.contains('bank-owner')){try{await api({action:'owner',id:e.target.dataset.id,owner:e.target.value});await reloadPreservingFilters();}catch(err){$('bank-message').textContent=err.message;}return;}if(e.target.classList.contains('bank-category'))categorize([e.target.dataset.id],e.target.value);});
+/* Delete (soft) and restore. Admins only; the server checks too. A deleted row
+   leaves every total, stays restorable, and a re-import won't bring it back. */
+let deletedRows=[];
+const isBankAdmin=()=>{const x=window.ledgerSession||{};const r=x.effectiveRole||x.role;return r==='admin'||r==='senior';};
+function renderDeleted(){const admin=isBankAdmin();document.querySelectorAll('.bank-admin-only').forEach(el=>{el.hidden=!admin;});
+ $('bank-deleted-wrap').hidden=!admin||!deletedRows.length;$('bank-deleted-label').textContent='Deleted transactions ('+deletedRows.length+')';
+ $('bank-deleted').innerHTML=deletedRows.map(t=>'<tr><td>'+esc(t.date)+'</td><td>••'+esc(t.account)+'</td><td>'+esc(t.payee)+'<span class="sub">'+esc(t.reference)+'</span></td><td style="white-space:nowrap">'+money(t.cents,t.currency)+'</td><td><span class="sub">'+esc(t.deletedBy)+' · '+esc(String(t.deletedAt).slice(0,10))+'</span></td><td><button type="button" class="btn" data-restore-id="'+esc(t.id)+'">Restore</button></td></tr>').join('');}
+async function deleteRows(ids){if(!ids.length){$('bank-message').textContent='Select transactions first.';return;}
+ try{await api({action:'delete',ids});await reloadPreservingFilters();
+  $('bank-message').innerHTML='Deleted '+ids.length+' transaction'+(ids.length===1?'':'s')+'. <button type="button" class="btn" id="bank-undo-delete" style="padding:4px 10px;margin-left:6px">Undo</button>';
+  $('bank-undo-delete').onclick=()=>restoreRows(ids);}catch(e){$('bank-message').textContent=e.message;}}
+async function restoreRows(ids){try{await api({action:'restore',ids});await reloadPreservingFilters();$('bank-message').textContent='Restored '+ids.length+' transaction'+(ids.length===1?'':'s')+'.';}catch(e){$('bank-message').textContent=e.message;}}
+$('bank-table').addEventListener('click',e=>{const b=e.target.closest('[data-delete-id]');if(b)deleteRows([b.dataset.deleteId]);});
+$('bank-deleted').addEventListener('click',e=>{const b=e.target.closest('[data-restore-id]');if(b)restoreRows([b.dataset.restoreId]);});
+$('bank-delete-selected').onclick=()=>deleteRows([...document.querySelectorAll('.bank-select:checked')].map(e=>e.value));
+(window.ledgerSessionReady||Promise.resolve()).then(()=>{try{renderDeleted();}catch(e){}});
 $('bank-apply').onclick=()=>categorize([...document.querySelectorAll('.bank-select:checked')].map(e=>e.value),$('bank-bulk-category').value);
 $('bank-confirm').onclick=()=>{const ids=[...document.querySelectorAll('.bank-select:checked')].map(e=>e.value);if(!ids.length){$('bank-message').textContent='Select transactions first.';return;} (async()=>{for(const c of cats){const group=rows.filter(t=>ids.includes(t.id)&&t.category===c).map(t=>t.id);if(group.length)await categorize(group,c);}})();};
 for(const id of ['bank-account','bank-currency','bank-from','bank-to','bank-search','bank-review'])$(id).oninput=()=>{limit=100;render();};

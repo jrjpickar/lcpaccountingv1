@@ -1,26 +1,24 @@
-import { getStore } from '@netlify/blobs';
 import { createHash } from 'node:crypto';
-import { requireAuth, actorName } from './lib/auth-guard.mts';
+import { requireAuth, actorName, currentUser } from './lib/auth-guard.mts';
 import { transactBlobJSON, json } from './lib/shared.mts';
 import { parseBankCSV, type BankTransaction } from './lib/bank-csv.mts';
-import { seed } from './lib/bank-seed.mts';
-import { categories, classify, pairOwnerPaid, isExpenseRow, type ContribOverride } from './lib/bank-metrics.mts';
+import { categories, isExpenseRow } from './lib/bank-metrics.mts';
+import { BANK_STORE as STORE, BANK_KEY as KEY, type BankState as State, bankFallback as fallback, allBankRows, visibleBankRows, classifiedRows, loadBankState } from './lib/bank-state.mts';
+import { atLeast } from '../shared/auth.ts';
 import { logActivity } from './lib/activity.mts';
 import { detectSubscriptions, contributionBreakdown } from './lib/bank-insights.mts';
-const STORE='ledger-bank-transactions', KEY='ledger';
-type State={rows:BankTransaction[];categories:Record<string,string>;owners?:Record<string,string>;sources?:Record<string,string>;contribs?:Record<string,ContribOverride>};
-const fallback:State={rows:[],categories:{}};
 const dupKey=(t:BankTransaction)=>JSON.stringify([t.account,t.date,t.cents,t.payee.trim().toLowerCase(),t.counterpartyAccount||'']);
 export default async(req:Request)=>{
  const denied=await requireAuth(req);if(denied)return denied;
- const merge=(state:State)=>[...new Map([...seed,...state.rows].map(t=>[t.id,t])).values()];
- const classified=(state:State)=>{const manualOwner=state.owners||{};return pairOwnerPaid(merge(state).map(t=>{const rule=classify(t,state.sources);return {...t,...rule,owner:manualOwner[t.id]??rule.owner,category:state.categories[t.id]||rule.category,reviewed:!!state.categories[t.id]||!rule.needsReview,classificationSource:state.categories[t.id]?'Manual':'CSV rule'};}),state.contribs||{}).map(t=>t.id in manualOwner?{...t,owner:manualOwner[t.id]}:t);};
+ const merge=allBankRows, visible=visibleBankRows, classified=(state:State)=>classifiedRows(state);
  try{
  if(req.method==='GET'){
- const state=await getStore(STORE).get(KEY,{type:'json',consistency:'strong'}) as State|null || fallback;
+ const state=await loadBankState();
  const rows=classified(state);
+ const del=state.deleted||{};
+ const deleted=allBankRows(state).filter(t=>del[t.id]).map(t=>({id:t.id,date:t.date,account:t.account,payee:t.payee,reference:t.reference,cents:t.cents,currency:t.currency,deletedBy:del[t.id].by,deletedAt:del[t.id].at})).sort((a,b)=>b.deletedAt.localeCompare(a.deletedAt));
  const today=new Date().toLocaleDateString('en-CA',{timeZone:'America/Los_Angeles'});
- return json({rows,insights:{asOf:today,...detectSubscriptions(rows,today),contributions:contributionBreakdown(rows)},sources:state.sources||{},categories,accounts:[...new Set(['2910','2911','7503','7510','8661','8662',...merge(state).map(t=>t.account)])].sort()});
+ return json({rows,insights:{asOf:today,...detectSubscriptions(rows,today),contributions:contributionBreakdown(rows)},deleted,sources:state.sources||{},categories,accounts:[...new Set(['2910','2911','7503','7510','8661','8662',...visible(state).map(t=>t.account)])].sort()});
  }
  if(req.method!=='POST')return json({error:'Method not allowed'},405);
  const raw=await req.text();if(raw.length>3_000_000)return json({error:'Import is too large; upload fewer files (3 MB maximum)'},413);
@@ -31,7 +29,23 @@ export default async(req:Request)=>{
  }
  if(body.action==='owner'){
  if(!['Art','Bryce','Jesse',''].includes(body.owner)||typeof body.id!=='string')throw new Error('Invalid owner');
- await transactBlobJSON<State>(STORE,KEY,fallback,s=>{if(!merge(s).some(t=>t.id===body.id))throw new Error('Unknown transaction');return {...s,owners:{...s.owners,[body.id]:body.owner}}});return json({ok:true});
+ await transactBlobJSON<State>(STORE,KEY,fallback,s=>{if(!visible(s).some(t=>t.id===body.id))throw new Error('Unknown transaction');return {...s,owners:{...s.owners,[body.id]:body.owner}}});return json({ok:true});
+ }
+ if(body.action==='delete'||body.action==='restore'){
+ // Admins only. Soft delete: the row disappears from every total and list but
+ // stays stored, so it can be restored and a re-import won't add it back.
+ if(!atLeast(currentUser(req),'admin'))return json({error:'Only admins can delete or restore transactions'},403);
+ if(!Array.isArray(body.ids)||!body.ids.length||body.ids.length>500||body.ids.some((x:any)=>typeof x!=='string'))throw new Error('Pick the transactions first');
+ const by=actorName(req),at=new Date().toISOString();let labels:string[]=[];
+ await transactBlobJSON<State>(STORE,KEY,fallback,s=>{
+  const all=new Map(merge(s).map(t=>[t.id,t]));const del={...(s.deleted||{})};labels=[];
+  for(const id of body.ids){const t=all.get(id);if(!t)throw new Error('Unknown transaction');
+   if(body.action==='delete'){if(del[id])continue;del[id]={by,at};}else{if(!del[id])continue;delete del[id];}
+   labels.push(t.date+' '+t.payee+' $'+(t.cents/100).toFixed(2));}
+  return {...s,deleted:del};
+ });
+ if(labels.length)await logActivity(req,body.action==='delete'?'Deleted bank transaction':'Restored bank transaction',labels.slice(0,5).join('; ')+(labels.length>5?' +'+(labels.length-5)+' more':''));
+ return json({ok:true,changed:labels.length});
  }
  if(body.action==='contrib-type'){
  // Owner paid / owner deposited, starting from what the P&L reconciled.
@@ -58,7 +72,7 @@ export default async(req:Request)=>{
  }
  if(body.action==='categorize'){
  if(!Array.isArray(body.ids)||body.ids.length>5000||!categories.includes(body.category))throw new Error('Invalid category selection');
- await transactBlobJSON<State>(STORE,KEY,fallback,s=>{const ids=new Set(merge(s).map(t=>t.id));for(const id of body.ids){if(!ids.has(id))throw new Error('Unknown transaction');}return {...s,categories:{...s.categories,...Object.fromEntries(body.ids.map((id:string)=>[id,body.category]))}}});return json({ok:true});
+ await transactBlobJSON<State>(STORE,KEY,fallback,s=>{const ids=new Set(visible(s).map(t=>t.id));for(const id of body.ids){if(!ids.has(id))throw new Error('Unknown transaction');}return {...s,categories:{...s.categories,...Object.fromEntries(body.ids.map((id:string)=>[id,body.category]))}}});return json({ok:true});
  }
  if(!['preview','import'].includes(body.action)||!Array.isArray(body.files)||body.files.length>50)throw new Error('Choose up to 50 Relay CSV files');
  const perFile:BankTransaction[][]=[];
@@ -79,7 +93,7 @@ export default async(req:Request)=>{
   for(const [k,list] of groups){for(const t of list.slice(have.get(k)||0)){let id=t.id,n=1;while(ids.has(id))id=createHash('sha256').update(t.id+'|'+(n++)).digest('hex');ids.add(id);fresh.push({...t,id});}}
   added=fresh.length;duplicates=total-added;sample=fresh.slice(0,10);return {...s,rows:[...s.rows,...fresh]};};
  if(body.action==='import')await transactBlobJSON<State>(STORE,KEY,fallback,combine);
- else combine(await getStore(STORE).get(KEY,{type:'json',consistency:'strong'}) as State|null || fallback);
+ else combine(await loadBankState());
  return json({added,duplicates,total,sample});
  }catch(e:any){return json({error:e.message||'Bank import failed'},400);}
 };
